@@ -13,6 +13,8 @@
 	},
 	"files": [
 		"dist",
+		"src",
+		"tsconfig.json",
 		"README.md"
 	],
 	"scripts": {
@@ -20,7 +22,8 @@
 		"dev": "tsc --watch",
 		"typecheck": "tsc --noEmit",
 		"clean": "rm -rf dist",
-		"prepublishOnly": "npm run clean && npm run build"
+		"prepublishOnly": "npm run clean && npm run build",
+		"postinstall": "npm run build"
 	},
 	"keywords": [
 		"tui",
@@ -43,8 +46,10 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
-	"devDependencies": {
-		"@types/node": "^24.10.1",
+	"dependencies": {
 		"typescript": "^5.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^24.10.1"
 	}
 }
