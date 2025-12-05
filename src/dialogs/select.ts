@@ -25,6 +25,7 @@ import {
   drawVerticalPadding,
   getFrameDimensions,
   getPadding,
+  DEFAULT_INTERNAL_PADDING,
 } from "../core/drawing";
 import type {
   MenuOption,
@@ -149,10 +150,13 @@ function renderSelectMenu<T>(
 
   drawDivider(innerWidth);
 
+  // Internal padding (space between border and content)
+  const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
+
   // Info lines (if any)
   if (config.infoLines && config.infoLines.length > 0) {
     for (const line of config.infoLines) {
-      drawLine(`  ${DIM}${line}${RESET}`, innerWidth);
+      drawLine(`${pad}${DIM}${line}${RESET}`, innerWidth);
     }
     drawEmptyLine(innerWidth);
   }
@@ -178,7 +182,7 @@ function renderSelectMenu<T>(
   let linesDrawn = 0;
 
   if (hasMoreAbove) {
-    drawLine(`  ${DIM}↑ more...${RESET}`, innerWidth);
+    drawLine(`${pad}${DIM}↑ more...${RESET}`, innerWidth);
     linesDrawn++;
   }
 
@@ -199,13 +203,13 @@ function renderSelectMenu<T>(
     let hint = "";
 
     if (isSelected) {
-      prefix = `${theme.colors.highlight}❯${RESET} `;
+      prefix = `${pad.slice(0, -1)}${theme.colors.highlight}❯${RESET} `;
       label = `${BOLD}${theme.colors.text}${opt.label}${RESET}`;
     } else if (isDisabled) {
-      prefix = "  ";
+      prefix = `${pad} `;
       label = `${DIM}${opt.label}${RESET}`;
     } else {
-      prefix = "  ";
+      prefix = `${pad} `;
       label = `${DIM}${opt.label}${RESET}`;
     }
 
@@ -225,7 +229,7 @@ function renderSelectMenu<T>(
   }
 
   if (hasMoreBelow) {
-    drawLine(`  ${DIM}↓ more...${RESET}`, innerWidth);
+    drawLine(`${pad}${DIM}↓ more...${RESET}`, innerWidth);
     linesDrawn++;
   }
 

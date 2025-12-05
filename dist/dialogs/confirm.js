@@ -6,7 +6,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isLeftKey, isRightKey, isConfirmKey, isBackKey, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
 // =============================================================================
 // Header & Footer
 // =============================================================================
@@ -18,9 +18,10 @@ function drawDefaultHeader(innerWidth, title) {
     drawEmptyLine(innerWidth);
 }
 function drawDefaultFooter(innerWidth) {
+    const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
     const hints = `${DIM}←→${RESET} Switch  ${DIM}⏎${RESET} Confirm  ${DIM}y${RESET} Yes  ${DIM}n${RESET} No  ${DIM}⌫${RESET} Cancel`;
     drawEmptyLine(innerWidth);
-    drawLine(`  ${hints}`, innerWidth);
+    drawLine(`${pad}${hints}`, innerWidth);
     drawEmptyLine(innerWidth);
 }
 // =============================================================================

@@ -18,6 +18,7 @@ import {
   drawVerticalPadding,
   getFrameDimensions,
   getPadding,
+  DEFAULT_INTERNAL_PADDING,
 } from "../core/drawing";
 import type { TextInputOptions, TextInputResult } from "../types/menu";
 
@@ -55,10 +56,11 @@ function drawDefaultHeader(innerWidth: number, title: string): void {
 }
 
 function drawDefaultFooter(innerWidth: number): void {
+  const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
   const hints = `${DIM}⏎${RESET} Submit  ${DIM}⌫${RESET} Delete/Back  ${DIM}Ctrl+C${RESET} Cancel`;
 
   drawEmptyLine(innerWidth);
-  drawLine(`  ${hints}`, innerWidth);
+  drawLine(`${pad}${hints}`, innerWidth);
   drawEmptyLine(innerWidth);
 }
 
@@ -107,10 +109,13 @@ function renderTextInput(
 
   drawDivider(innerWidth);
 
+  // Internal padding (space between border and content)
+  const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
+
   // Info lines (if any)
   if (config.infoLines && config.infoLines.length > 0) {
     for (const line of config.infoLines) {
-      drawLine(`  ${DIM}${line}${RESET}`, innerWidth);
+      drawLine(`${pad}${DIM}${line}${RESET}`, innerWidth);
     }
     drawEmptyLine(innerWidth);
   }
@@ -139,13 +144,13 @@ function renderTextInput(
   }
 
   if (displayValue) {
-    drawLine(`  ${prefix}${displayValue}${cursor}`, innerWidth);
+    drawLine(`${pad}${prefix}${displayValue}${cursor}`, innerWidth);
   } else {
     // Show placeholder when empty
     const placeholder = config.placeholder
       ? `${theme.colors.textMuted}${config.placeholder}${RESET}`
       : "";
-    drawLine(`  ${prefix}${cursor}${placeholder}`, innerWidth);
+    drawLine(`${pad}${prefix}${cursor}${placeholder}`, innerWidth);
   }
 
   // Bottom padding for centering
@@ -156,7 +161,10 @@ function renderTextInput(
   // Error message (if any)
   if (errorMessage) {
     drawEmptyLine(innerWidth);
-    drawLine(`  ${theme.colors.error}! ${errorMessage}${RESET}`, innerWidth);
+    drawLine(
+      `${pad}${theme.colors.error}! ${errorMessage}${RESET}`,
+      innerWidth,
+    );
   }
 
   drawDivider(innerWidth);

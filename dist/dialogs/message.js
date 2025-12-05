@@ -8,7 +8,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypress } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
 const MESSAGE_TYPES = {
     info: { icon: "●", colorKey: "info" },
     success: { icon: "✓", colorKey: "success" },
@@ -53,13 +53,15 @@ function renderMessage(config) {
         drawEmptyLine(innerWidth);
     }
     drawDivider(innerWidth);
+    // Internal padding (space between border and content)
+    const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
     // Content lines
     for (const line of config.lines) {
         if (config.centerLines) {
             drawCenteredLine(line, innerWidth);
         }
         else {
-            drawLine(`  ${line}`, innerWidth);
+            drawLine(`${pad}${line}`, innerWidth);
         }
     }
     drawDivider(innerWidth);

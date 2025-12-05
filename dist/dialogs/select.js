@@ -7,7 +7,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isUpKey, isDownKey, isConfirmKey, isBackKey, getNumberKey, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
 // =============================================================================
 // Header & Footer
 // =============================================================================
@@ -72,10 +72,12 @@ function renderSelectMenu(config, selectedIndex) {
         drawDefaultHeader(innerWidth, config.title, config.appName, config.subtitle, config.description);
     }
     drawDivider(innerWidth);
+    // Internal padding (space between border and content)
+    const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
     // Info lines (if any)
     if (config.infoLines && config.infoLines.length > 0) {
         for (const line of config.infoLines) {
-            drawLine(`  ${DIM}${line}${RESET}`, innerWidth);
+            drawLine(`${pad}${DIM}${line}${RESET}`, innerWidth);
         }
         drawEmptyLine(innerWidth);
     }
@@ -97,7 +99,7 @@ function renderSelectMenu(config, selectedIndex) {
     // Render options
     let linesDrawn = 0;
     if (hasMoreAbove) {
-        drawLine(`  ${DIM}↑ more...${RESET}`, innerWidth);
+        drawLine(`${pad}${DIM}↑ more...${RESET}`, innerWidth);
         linesDrawn++;
     }
     for (let i = startIndex; i < endIndex && linesDrawn < availableContentLines; i++) {
@@ -111,15 +113,15 @@ function renderSelectMenu(config, selectedIndex) {
         let label;
         let hint = "";
         if (isSelected) {
-            prefix = `${theme.colors.highlight}❯${RESET} `;
+            prefix = `${pad.slice(0, -1)}${theme.colors.highlight}❯${RESET} `;
             label = `${BOLD}${theme.colors.text}${opt.label}${RESET}`;
         }
         else if (isDisabled) {
-            prefix = "  ";
+            prefix = `${pad} `;
             label = `${DIM}${opt.label}${RESET}`;
         }
         else {
-            prefix = "  ";
+            prefix = `${pad} `;
             label = `${DIM}${opt.label}${RESET}`;
         }
         if (opt.hint) {
@@ -135,7 +137,7 @@ function renderSelectMenu(config, selectedIndex) {
         linesDrawn++;
     }
     if (hasMoreBelow) {
-        drawLine(`  ${DIM}↓ more...${RESET}`, innerWidth);
+        drawLine(`${pad}${DIM}↓ more...${RESET}`, innerWidth);
         linesDrawn++;
     }
     // Fill remaining space

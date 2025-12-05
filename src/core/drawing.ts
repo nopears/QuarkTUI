@@ -82,10 +82,13 @@ export const BOX_DOUBLE = {
 // =============================================================================
 
 /** Default horizontal padding (left/right margin from terminal edge) */
-export const DEFAULT_PADDING_X = 2;
+export const DEFAULT_PADDING_X = 4;
 
 /** Default vertical padding (top/bottom margin from terminal edge) */
-export const DEFAULT_PADDING_Y = 1;
+export const DEFAULT_PADDING_Y = 2;
+
+/** Default internal padding (space between border and content) */
+export const DEFAULT_INTERNAL_PADDING = 2;
 
 /** Default maximum frame width */
 export const DEFAULT_MAX_FRAME_WIDTH = 60;

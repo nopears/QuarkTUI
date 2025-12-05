@@ -23,6 +23,7 @@ import {
   drawVerticalPadding,
   getFrameDimensions,
   getPadding,
+  DEFAULT_INTERNAL_PADDING,
 } from "../core/drawing";
 import type { ConfirmOptions, ConfirmResult } from "../types/menu";
 
@@ -56,10 +57,11 @@ function drawDefaultHeader(innerWidth: number, title: string): void {
 }
 
 function drawDefaultFooter(innerWidth: number): void {
+  const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
   const hints = `${DIM}←→${RESET} Switch  ${DIM}⏎${RESET} Confirm  ${DIM}y${RESET} Yes  ${DIM}n${RESET} No  ${DIM}⌫${RESET} Cancel`;
 
   drawEmptyLine(innerWidth);
-  drawLine(`  ${hints}`, innerWidth);
+  drawLine(`${pad}${hints}`, innerWidth);
   drawEmptyLine(innerWidth);
 }
 

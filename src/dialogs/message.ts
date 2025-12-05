@@ -21,6 +21,7 @@ import {
   calculateFrameWidth,
   beginCenteredFrame,
   endCenteredFrame,
+  DEFAULT_INTERNAL_PADDING,
 } from "../core/drawing";
 import type { MessageType, MessageOptions } from "../types/menu";
 
@@ -107,12 +108,15 @@ function renderMessage(config: MessageConfig): void {
 
   drawDivider(innerWidth);
 
+  // Internal padding (space between border and content)
+  const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
+
   // Content lines
   for (const line of config.lines) {
     if (config.centerLines) {
       drawCenteredLine(line, innerWidth);
     } else {
-      drawLine(`  ${line}`, innerWidth);
+      drawLine(`${pad}${line}`, innerWidth);
     }
   }
 
