@@ -14,10 +14,8 @@ import {
   drawEmptyLine,
   drawCenteredLine,
   drawVerticalPadding,
+  getFrameDimensions,
   calculateCenteringPadding,
-  calculateFrameWidth,
-  beginCenteredFrame,
-  endCenteredFrame,
 } from "../core/drawing";
 
 import type { SpinnerOptions, SpinnerController } from "../types/menu";
@@ -102,11 +100,9 @@ function renderSpinner(
   frame: string,
   message: string,
 ): void {
+  const { width } = getFrameDimensions();
+  const innerWidth = width - 2;
   const theme = getCurrentTheme();
-
-  // Calculate frame width for horizontal centering
-  const frameWidth = calculateFrameWidth();
-  const innerWidth = frameWidth - 2;
 
   // Calculate actual content height
   const hasTitle = !!config.title;
@@ -125,9 +121,6 @@ function renderSpinner(
 
   clearScreen();
   hideCursor();
-
-  // Set up horizontal centering
-  beginCenteredFrame(frameWidth);
 
   // Dynamic vertical padding
   drawVerticalPadding(topPadding);
@@ -157,9 +150,6 @@ function renderSpinner(
   // Footer
   drawEmptyLine(innerWidth);
   drawBottomBorder(innerWidth);
-
-  // End horizontal centering
-  endCenteredFrame();
 }
 
 // =============================================================================
@@ -260,10 +250,8 @@ export function showSpinner(
       // Show final message if provided
       if (finalMessage) {
         const theme = getCurrentTheme();
-
-        // Calculate frame width for horizontal centering
-        const frameWidth = calculateFrameWidth();
-        const innerWidth = frameWidth - 2;
+        const { width } = getFrameDimensions();
+        const innerWidth = width - 2;
 
         const hasTitle = !!config.title;
         const headerLineCount = hasTitle ? 4 : 2;
@@ -280,9 +268,6 @@ export function showSpinner(
 
         clearScreen();
         hideCursor();
-
-        // Set up horizontal centering
-        beginCenteredFrame(frameWidth);
 
         drawVerticalPadding(topPadding);
         drawTopBorder(innerWidth);
@@ -307,9 +292,6 @@ export function showSpinner(
 
         drawEmptyLine(innerWidth);
         drawBottomBorder(innerWidth);
-
-        // End horizontal centering
-        endCenteredFrame();
       }
 
       showCursor();

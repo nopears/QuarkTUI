@@ -7,7 +7,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
 // =============================================================================
 // Key Detection
 // =============================================================================
@@ -57,10 +57,9 @@ function buildHelpLines(content) {
     return lines;
 }
 function renderHelp(content, contentLines, scrollOffset) {
+    const { width } = getFrameDimensions();
+    const innerWidth = width - 2;
     const theme = getCurrentTheme();
-    // Calculate frame width for horizontal centering
-    const frameWidth = calculateFrameWidth();
-    const innerWidth = frameWidth - 2;
     // Calculate actual content height
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = 4; // divider + empty + hint + empty
@@ -75,8 +74,6 @@ function renderHelp(content, contentLines, scrollOffset) {
     const topPadding = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
-    // Set up horizontal centering
-    beginCenteredFrame(frameWidth);
     // Dynamic vertical padding
     drawVerticalPadding(topPadding);
     // Top border
@@ -121,8 +118,6 @@ function renderHelp(content, contentLines, scrollOffset) {
     drawLine(`  ${DIM}Press any key to close${RESET}`, innerWidth);
     drawEmptyLine(innerWidth);
     drawBottomBorder(innerWidth);
-    // End horizontal centering
-    endCenteredFrame();
 }
 // =============================================================================
 // Main Function
