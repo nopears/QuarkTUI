@@ -17,8 +17,10 @@ import {
   drawLine,
   drawCenteredLine,
   drawVerticalPadding,
-  getFrameDimensions,
   calculateCenteringPadding,
+  calculateFrameWidth,
+  beginCenteredFrame,
+  endCenteredFrame,
 } from "../core/drawing";
 import type { MessageType, MessageOptions } from "../types/menu";
 
@@ -61,9 +63,11 @@ const MESSAGE_TYPES: Record<MessageType, MessageTypeConfig> = {
 // =============================================================================
 
 function renderMessage(config: MessageConfig): void {
-  const { width } = getFrameDimensions();
-  const innerWidth = width - 2;
   const theme = getCurrentTheme();
+
+  // Calculate frame width for horizontal centering
+  const frameWidth = calculateFrameWidth();
+  const innerWidth = frameWidth - 2;
 
   const type = config.type ?? "info";
   const typeConfig = MESSAGE_TYPES[type];
@@ -80,11 +84,14 @@ function renderMessage(config: MessageConfig): void {
     footerLineCount +
     contentLineCount;
 
-  // Calculate centering
+  // Calculate vertical centering
   const topPadding = calculateCenteringPadding(contentHeight);
 
   clearScreen();
   hideCursor();
+
+  // Set up horizontal centering
+  beginCenteredFrame(frameWidth);
 
   // Dynamic vertical padding
   drawVerticalPadding(topPadding);
@@ -134,6 +141,9 @@ function renderMessage(config: MessageConfig): void {
   }
 
   drawBottomBorder(innerWidth);
+
+  // End horizontal centering
+  endCenteredFrame();
 }
 
 // =============================================================================

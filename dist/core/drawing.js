@@ -78,6 +78,10 @@ export const BOX_DOUBLE = {
 export const DEFAULT_PADDING_X = 2;
 /** Default vertical padding (top/bottom margin from terminal edge) */
 export const DEFAULT_PADDING_Y = 1;
+/** Default maximum frame width */
+export const DEFAULT_MAX_FRAME_WIDTH = 60;
+/** Default frame width as percentage of terminal width */
+export const DEFAULT_FRAME_WIDTH_PERCENT = 0.8;
 /** Current layout configuration */
 let layoutConfig = {
     paddingX: DEFAULT_PADDING_X,
@@ -130,6 +134,48 @@ export function calculateCenteringPadding(contentHeight) {
     const padding = Math.max(0, Math.floor((height - contentHeight) / 2));
     return padding;
 }
+/**
+ * Calculate horizontal padding to center a frame of a specific width.
+ *
+ * @param frameWidth - Total width of the frame (including borders)
+ * @returns The number of spaces to add on the left for centering
+ */
+export function calculateHorizontalCentering(frameWidth) {
+    const { width } = getTerminalSize();
+    return Math.max(0, Math.floor((width - frameWidth) / 2));
+}
+/**
+ * Calculate a centered frame width based on terminal size.
+ *
+ * @param maxWidth - Maximum frame width (default: 60)
+ * @param widthPercent - Frame width as percentage of terminal (default: 0.8)
+ * @returns The frame width to use
+ */
+export function calculateFrameWidth(maxWidth = DEFAULT_MAX_FRAME_WIDTH, widthPercent = DEFAULT_FRAME_WIDTH_PERCENT) {
+    const { width } = getTerminalSize();
+    return Math.min(maxWidth, Math.floor(width * widthPercent));
+}
+// =============================================================================
+// Centered Frame State
+// =============================================================================
+/** Current horizontal padding for centered frame (null = use layout config) */
+let currentHorizontalPadding = null;
+/**
+ * Begin centered frame rendering.
+ * Call this before drawing a frame to enable horizontal centering.
+ *
+ * @param frameWidth - Width of the frame to center
+ */
+export function beginCenteredFrame(frameWidth) {
+    currentHorizontalPadding = calculateHorizontalCentering(frameWidth);
+}
+/**
+ * End centered frame rendering.
+ * Call this after drawing a frame to restore default padding.
+ */
+export function endCenteredFrame() {
+    currentHorizontalPadding = null;
+}
 // =============================================================================
 // Drawing Primitives
 // =============================================================================
@@ -141,9 +187,11 @@ function getBorderColor() {
 }
 /**
  * Draw horizontal padding (spaces before the frame).
+ * Uses centered frame padding if set, otherwise uses layout config.
  */
 export function drawHorizontalPadding() {
-    process.stdout.write(repeat(" ", layoutConfig.paddingX));
+    const padding = currentHorizontalPadding ?? layoutConfig.paddingX;
+    process.stdout.write(repeat(" ", padding));
 }
 /**
  * Draw the top border of a frame.

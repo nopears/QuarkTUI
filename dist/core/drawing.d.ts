@@ -69,6 +69,10 @@ export declare const BOX_DOUBLE: {
 export declare const DEFAULT_PADDING_X = 2;
 /** Default vertical padding (top/bottom margin from terminal edge) */
 export declare const DEFAULT_PADDING_Y = 1;
+/** Default maximum frame width */
+export declare const DEFAULT_MAX_FRAME_WIDTH = 60;
+/** Default frame width as percentage of terminal width */
+export declare const DEFAULT_FRAME_WIDTH_PERCENT = 0.8;
 /**
  * Layout configuration for drawing operations.
  */
@@ -121,7 +125,35 @@ export declare function getFrameDimensions(termSize?: TerminalSize): FrameDimens
  */
 export declare function calculateCenteringPadding(contentHeight: number): number;
 /**
+ * Calculate horizontal padding to center a frame of a specific width.
+ *
+ * @param frameWidth - Total width of the frame (including borders)
+ * @returns The number of spaces to add on the left for centering
+ */
+export declare function calculateHorizontalCentering(frameWidth: number): number;
+/**
+ * Calculate a centered frame width based on terminal size.
+ *
+ * @param maxWidth - Maximum frame width (default: 60)
+ * @param widthPercent - Frame width as percentage of terminal (default: 0.8)
+ * @returns The frame width to use
+ */
+export declare function calculateFrameWidth(maxWidth?: number, widthPercent?: number): number;
+/**
+ * Begin centered frame rendering.
+ * Call this before drawing a frame to enable horizontal centering.
+ *
+ * @param frameWidth - Width of the frame to center
+ */
+export declare function beginCenteredFrame(frameWidth: number): void;
+/**
+ * End centered frame rendering.
+ * Call this after drawing a frame to restore default padding.
+ */
+export declare function endCenteredFrame(): void;
+/**
  * Draw horizontal padding (spaces before the frame).
+ * Uses centered frame padding if set, otherwise uses layout config.
  */
 export declare function drawHorizontalPadding(): void;
 /**

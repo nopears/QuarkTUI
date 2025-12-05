@@ -11,7 +11,6 @@ import {
   waitForKeypressCancellable,
   type KeypressEvent,
 } from "../core/keyboard";
-import { style } from "../core/style";
 import {
   drawTopBorder,
   drawBottomBorder,
@@ -20,8 +19,10 @@ import {
   drawLine,
   drawCenteredLine,
   drawVerticalPadding,
-  getFrameDimensions,
   calculateCenteringPadding,
+  calculateFrameWidth,
+  beginCenteredFrame,
+  endCenteredFrame,
 } from "../core/drawing";
 
 // =============================================================================
@@ -124,9 +125,11 @@ function renderHelp(
   contentLines: string[],
   scrollOffset: number,
 ): void {
-  const { width } = getFrameDimensions();
-  const innerWidth = width - 2;
   const theme = getCurrentTheme();
+
+  // Calculate frame width for horizontal centering
+  const frameWidth = calculateFrameWidth();
+  const innerWidth = frameWidth - 2;
 
   // Calculate actual content height
   const headerLineCount = 4; // empty + title + empty + divider
@@ -141,11 +144,14 @@ function renderHelp(
     maxContentLines +
     scrollIndicators;
 
-  // Calculate centering
+  // Calculate vertical centering
   const topPadding = calculateCenteringPadding(contentHeight);
 
   clearScreen();
   hideCursor();
+
+  // Set up horizontal centering
+  beginCenteredFrame(frameWidth);
 
   // Dynamic vertical padding
   drawVerticalPadding(topPadding);
@@ -208,6 +214,9 @@ function renderHelp(
   drawEmptyLine(innerWidth);
 
   drawBottomBorder(innerWidth);
+
+  // End horizontal centering
+  endCenteredFrame();
 }
 
 // =============================================================================
@@ -266,14 +275,10 @@ export async function showHelp(content: HelpContent): Promise<void> {
     showCursor();
   };
 
-  // Calculate max scroll
+  // Calculate max scroll based on fixed content lines
+  const maxContentLines = 15;
   const getMaxScroll = () => {
-    const { height } = getFrameDimensions();
-    const headerLineCount = 4;
-    const footerLineCount = 4;
-    const availableContentLines =
-      height - headerLineCount - footerLineCount - 2;
-    return Math.max(0, contentLines.length - availableContentLines);
+    return Math.max(0, contentLines.length - maxContentLines);
   };
 
   // Initial render

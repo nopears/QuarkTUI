@@ -7,7 +7,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isUpKey, isDownKey, isConfirmKey, isBackKey, getNumberKey, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, } from "../core/drawing";
 // =============================================================================
 // Header & Footer
 // =============================================================================
@@ -19,7 +19,6 @@ function drawDefaultHeader(innerWidth, title) {
     drawEmptyLine(innerWidth);
 }
 function drawDefaultFooter(innerWidth) {
-    const theme = getCurrentTheme();
     const hints = `${DIM}↑↓${RESET} Navigate  ${DIM}⏎${RESET} Select  ${DIM}q/⌫${RESET} Back`;
     drawEmptyLine(innerWidth);
     drawLine(`  ${hints}`, innerWidth);
@@ -29,9 +28,10 @@ function drawDefaultFooter(innerWidth) {
 // Rendering
 // =============================================================================
 function renderSelectMenu(config, selectedIndex) {
-    const { width } = getFrameDimensions();
-    const innerWidth = width - 2;
     const theme = getCurrentTheme();
+    // Calculate frame width for horizontal centering
+    const frameWidth = calculateFrameWidth();
+    const innerWidth = frameWidth - 2;
     // Calculate actual content height
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = 4; // divider + empty + hints + empty
@@ -45,10 +45,12 @@ function renderSelectMenu(config, selectedIndex) {
         infoLineCount +
         maxVisibleOptions +
         scrollIndicators;
-    // Calculate centering
+    // Calculate vertical centering
     const topPadding = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
+    // Set up horizontal centering
+    beginCenteredFrame(frameWidth);
     // Dynamic vertical padding for centering
     drawVerticalPadding(topPadding);
     // Top border
@@ -142,6 +144,8 @@ function renderSelectMenu(config, selectedIndex) {
         drawDefaultFooter(innerWidth);
     }
     drawBottomBorder(innerWidth);
+    // End horizontal centering
+    endCenteredFrame();
 }
 // =============================================================================
 // Main Function

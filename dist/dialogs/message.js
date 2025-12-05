@@ -8,7 +8,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypress } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, } from "../core/drawing";
 const MESSAGE_TYPES = {
     info: { icon: "●", colorKey: "info" },
     success: { icon: "✓", colorKey: "success" },
@@ -19,9 +19,10 @@ const MESSAGE_TYPES = {
 // Rendering
 // =============================================================================
 function renderMessage(config) {
-    const { width } = getFrameDimensions();
-    const innerWidth = width - 2;
     const theme = getCurrentTheme();
+    // Calculate frame width for horizontal centering
+    const frameWidth = calculateFrameWidth();
+    const innerWidth = frameWidth - 2;
     const type = config.type ?? "info";
     const typeConfig = MESSAGE_TYPES[type];
     const color = theme.colors[typeConfig.colorKey];
@@ -33,10 +34,12 @@ function renderMessage(config) {
         headerLineCount +
         footerLineCount +
         contentLineCount;
-    // Calculate centering
+    // Calculate vertical centering
     const topPadding = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
+    // Set up horizontal centering
+    beginCenteredFrame(frameWidth);
     // Dynamic vertical padding
     drawVerticalPadding(topPadding);
     // Top border
@@ -79,6 +82,8 @@ function renderMessage(config) {
         drawEmptyLine(innerWidth);
     }
     drawBottomBorder(innerWidth);
+    // End horizontal centering
+    endCenteredFrame();
 }
 // =============================================================================
 // Main Functions

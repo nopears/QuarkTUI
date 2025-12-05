@@ -16,8 +16,10 @@ import {
   drawLine,
   drawCenteredLine,
   drawVerticalPadding,
-  getFrameDimensions,
   calculateCenteringPadding,
+  calculateFrameWidth,
+  beginCenteredFrame,
+  endCenteredFrame,
 } from "../core/drawing";
 import type { TextInputOptions, TextInputResult } from "../types/menu";
 
@@ -71,9 +73,11 @@ function renderTextInput(
   value: string,
   errorMessage: string | null,
 ): void {
-  const { width } = getFrameDimensions();
-  const innerWidth = width - 2;
   const theme = getCurrentTheme();
+
+  // Calculate frame width for horizontal centering
+  const frameWidth = calculateFrameWidth();
+  const innerWidth = frameWidth - 2;
 
   // Calculate actual content height
   const headerLineCount = 4; // empty + title + empty + divider
@@ -90,11 +94,14 @@ function renderTextInput(
     errorLineCount +
     inputLineCount;
 
-  // Calculate centering
+  // Calculate vertical centering
   const topPadding = calculateCenteringPadding(contentHeight);
 
   clearScreen();
   hideCursor();
+
+  // Set up horizontal centering
+  beginCenteredFrame(frameWidth);
 
   // Dynamic vertical padding
   drawVerticalPadding(topPadding);
@@ -160,6 +167,9 @@ function renderTextInput(
   }
 
   drawBottomBorder(innerWidth);
+
+  // End horizontal centering
+  endCenteredFrame();
 }
 
 // =============================================================================

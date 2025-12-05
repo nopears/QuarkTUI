@@ -19,62 +19,62 @@ import { visibleLength, repeat } from "./style";
  * Uses Unicode rounded corner characters for a modern look.
  */
 export const BOX = {
-	/** Top-left corner: ╭ */
-	topLeft: "╭",
-	/** Top-right corner: ╮ */
-	topRight: "╮",
-	/** Bottom-left corner: ╰ */
-	bottomLeft: "╰",
-	/** Bottom-right corner: ╯ */
-	bottomRight: "╯",
-	/** Horizontal line: ─ */
-	horizontal: "─",
-	/** Vertical line: │ */
-	vertical: "│",
-	/** Left tee (for dividers): ├ */
-	teeLeft: "├",
-	/** Right tee (for dividers): ┤ */
-	teeRight: "┤",
-	/** Top tee: ┬ */
-	teeTop: "┬",
-	/** Bottom tee: ┴ */
-	teeBottom: "┴",
-	/** Cross: ┼ */
-	cross: "┼",
+  /** Top-left corner: ╭ */
+  topLeft: "╭",
+  /** Top-right corner: ╮ */
+  topRight: "╮",
+  /** Bottom-left corner: ╰ */
+  bottomLeft: "╰",
+  /** Bottom-right corner: ╯ */
+  bottomRight: "╯",
+  /** Horizontal line: ─ */
+  horizontal: "─",
+  /** Vertical line: │ */
+  vertical: "│",
+  /** Left tee (for dividers): ├ */
+  teeLeft: "├",
+  /** Right tee (for dividers): ┤ */
+  teeRight: "┤",
+  /** Top tee: ┬ */
+  teeTop: "┬",
+  /** Bottom tee: ┴ */
+  teeBottom: "┴",
+  /** Cross: ┼ */
+  cross: "┼",
 } as const;
 
 /**
  * Alternative box characters with sharp corners.
  */
 export const BOX_SHARP = {
-	topLeft: "┌",
-	topRight: "┐",
-	bottomLeft: "└",
-	bottomRight: "┘",
-	horizontal: "─",
-	vertical: "│",
-	teeLeft: "├",
-	teeRight: "┤",
-	teeTop: "┬",
-	teeBottom: "┴",
-	cross: "┼",
+  topLeft: "┌",
+  topRight: "┐",
+  bottomLeft: "└",
+  bottomRight: "┘",
+  horizontal: "─",
+  vertical: "│",
+  teeLeft: "├",
+  teeRight: "┤",
+  teeTop: "┬",
+  teeBottom: "┴",
+  cross: "┼",
 } as const;
 
 /**
  * Double-line box characters.
  */
 export const BOX_DOUBLE = {
-	topLeft: "╔",
-	topRight: "╗",
-	bottomLeft: "╚",
-	bottomRight: "╝",
-	horizontal: "═",
-	vertical: "║",
-	teeLeft: "╠",
-	teeRight: "╣",
-	teeTop: "╦",
-	teeBottom: "╩",
-	cross: "╬",
+  topLeft: "╔",
+  topRight: "╗",
+  bottomLeft: "╚",
+  bottomRight: "╝",
+  horizontal: "═",
+  vertical: "║",
+  teeLeft: "╠",
+  teeRight: "╣",
+  teeTop: "╦",
+  teeBottom: "╩",
+  cross: "╬",
 } as const;
 
 // =============================================================================
@@ -87,6 +87,12 @@ export const DEFAULT_PADDING_X = 2;
 /** Default vertical padding (top/bottom margin from terminal edge) */
 export const DEFAULT_PADDING_Y = 1;
 
+/** Default maximum frame width */
+export const DEFAULT_MAX_FRAME_WIDTH = 60;
+
+/** Default frame width as percentage of terminal width */
+export const DEFAULT_FRAME_WIDTH_PERCENT = 0.8;
+
 // =============================================================================
 // Layout Configuration
 // =============================================================================
@@ -95,37 +101,37 @@ export const DEFAULT_PADDING_Y = 1;
  * Layout configuration for drawing operations.
  */
 export interface LayoutConfig {
-	/** Horizontal padding from terminal edges */
-	paddingX: number;
-	/** Vertical padding from terminal edges */
-	paddingY: number;
+  /** Horizontal padding from terminal edges */
+  paddingX: number;
+  /** Vertical padding from terminal edges */
+  paddingY: number;
 }
 
 /** Current layout configuration */
 let layoutConfig: LayoutConfig = {
-	paddingX: DEFAULT_PADDING_X,
-	paddingY: DEFAULT_PADDING_Y,
+  paddingX: DEFAULT_PADDING_X,
+  paddingY: DEFAULT_PADDING_Y,
 };
 
 /**
  * Set the layout configuration.
  */
 export function setLayout(config: Partial<LayoutConfig>): void {
-	layoutConfig = { ...layoutConfig, ...config };
+  layoutConfig = { ...layoutConfig, ...config };
 }
 
 /**
  * Get the current layout configuration.
  */
 export function getLayout(): LayoutConfig {
-	return { ...layoutConfig };
+  return { ...layoutConfig };
 }
 
 /**
  * Get the padding values.
  */
 export function getPadding(): { x: number; y: number } {
-	return { x: layoutConfig.paddingX, y: layoutConfig.paddingY };
+  return { x: layoutConfig.paddingX, y: layoutConfig.paddingY };
 }
 
 // =============================================================================
@@ -136,14 +142,14 @@ export function getPadding(): { x: number; y: number } {
  * Dimensions of the drawable frame area.
  */
 export interface FrameDimensions {
-	/** Total width available for the frame */
-	width: number;
-	/** Total height available for the frame */
-	height: number;
-	/** Width inside the frame borders */
-	innerWidth: number;
-	/** Height inside the frame borders (excluding header/footer) */
-	innerHeight: number;
+  /** Total width available for the frame */
+  width: number;
+  /** Total height available for the frame */
+  height: number;
+  /** Width inside the frame borders */
+  innerWidth: number;
+  /** Height inside the frame borders (excluding header/footer) */
+  innerHeight: number;
 }
 
 /**
@@ -153,32 +159,82 @@ export interface FrameDimensions {
  * @returns Frame dimensions
  */
 export function getFrameDimensions(termSize?: TerminalSize): FrameDimensions {
-	const size = termSize ?? getTerminalSize();
-	const { paddingX, paddingY } = layoutConfig;
+  const size = termSize ?? getTerminalSize();
+  const { paddingX, paddingY } = layoutConfig;
 
-	const width = size.width - paddingX * 2;
-	const height = size.height - paddingY * 2;
+  const width = size.width - paddingX * 2;
+  const height = size.height - paddingY * 2;
 
-	return {
-		width,
-		height,
-		innerWidth: width - 2, // Subtract left and right border
-		innerHeight: height - 2, // Subtract top and bottom border
-	};
+  return {
+    width,
+    height,
+    innerWidth: width - 2, // Subtract left and right border
+    innerHeight: height - 2, // Subtract top and bottom border
+  };
 }
 
 /**
  * Calculate vertical padding to center content of a specific height.
- * 
+ *
  * @param contentHeight - Total lines the content will occupy (including borders, header, footer)
  * @returns The number of empty lines to add at the top for centering
  */
 export function calculateCenteringPadding(contentHeight: number): number {
-	const { height } = getTerminalSize();
-	const padding = Math.max(0, Math.floor((height - contentHeight) / 2));
-	return padding;
+  const { height } = getTerminalSize();
+  const padding = Math.max(0, Math.floor((height - contentHeight) / 2));
+  return padding;
 }
 
+/**
+ * Calculate horizontal padding to center a frame of a specific width.
+ *
+ * @param frameWidth - Total width of the frame (including borders)
+ * @returns The number of spaces to add on the left for centering
+ */
+export function calculateHorizontalCentering(frameWidth: number): number {
+  const { width } = getTerminalSize();
+  return Math.max(0, Math.floor((width - frameWidth) / 2));
+}
+
+/**
+ * Calculate a centered frame width based on terminal size.
+ *
+ * @param maxWidth - Maximum frame width (default: 60)
+ * @param widthPercent - Frame width as percentage of terminal (default: 0.8)
+ * @returns The frame width to use
+ */
+export function calculateFrameWidth(
+  maxWidth: number = DEFAULT_MAX_FRAME_WIDTH,
+  widthPercent: number = DEFAULT_FRAME_WIDTH_PERCENT,
+): number {
+  const { width } = getTerminalSize();
+  return Math.min(maxWidth, Math.floor(width * widthPercent));
+}
+
+// =============================================================================
+// Centered Frame State
+// =============================================================================
+
+/** Current horizontal padding for centered frame (null = use layout config) */
+let currentHorizontalPadding: number | null = null;
+
+/**
+ * Begin centered frame rendering.
+ * Call this before drawing a frame to enable horizontal centering.
+ *
+ * @param frameWidth - Width of the frame to center
+ */
+export function beginCenteredFrame(frameWidth: number): void {
+  currentHorizontalPadding = calculateHorizontalCentering(frameWidth);
+}
+
+/**
+ * End centered frame rendering.
+ * Call this after drawing a frame to restore default padding.
+ */
+export function endCenteredFrame(): void {
+  currentHorizontalPadding = null;
+}
 
 // =============================================================================
 // Drawing Primitives
@@ -188,14 +244,16 @@ export function calculateCenteringPadding(contentHeight: number): number {
  * Get the border color from the current theme.
  */
 function getBorderColor(): string {
-	return getCurrentTheme().colors.border;
+  return getCurrentTheme().colors.border;
 }
 
 /**
  * Draw horizontal padding (spaces before the frame).
+ * Uses centered frame padding if set, otherwise uses layout config.
  */
 export function drawHorizontalPadding(): void {
-	process.stdout.write(repeat(" ", layoutConfig.paddingX));
+  const padding = currentHorizontalPadding ?? layoutConfig.paddingX;
+  process.stdout.write(repeat(" ", padding));
 }
 
 /**
@@ -204,15 +262,12 @@ export function drawHorizontalPadding(): void {
  * @param innerWidth - Width inside the frame (excluding borders)
  * @param box - Box characters to use (default: rounded)
  */
-export function drawTopBorder(
-	innerWidth: number,
-	box: typeof BOX = BOX,
-): void {
-	const color = getBorderColor();
-	drawHorizontalPadding();
-	console.log(
-		`${color}${box.topLeft}${repeat(box.horizontal, innerWidth)}${box.topRight}${RESET}`,
-	);
+export function drawTopBorder(innerWidth: number, box: typeof BOX = BOX): void {
+  const color = getBorderColor();
+  drawHorizontalPadding();
+  console.log(
+    `${color}${box.topLeft}${repeat(box.horizontal, innerWidth)}${box.topRight}${RESET}`,
+  );
 }
 
 /**
@@ -222,14 +277,14 @@ export function drawTopBorder(
  * @param box - Box characters to use (default: rounded)
  */
 export function drawBottomBorder(
-	innerWidth: number,
-	box: typeof BOX = BOX,
+  innerWidth: number,
+  box: typeof BOX = BOX,
 ): void {
-	const color = getBorderColor();
-	drawHorizontalPadding();
-	console.log(
-		`${color}${box.bottomLeft}${repeat(box.horizontal, innerWidth)}${box.bottomRight}${RESET}`,
-	);
+  const color = getBorderColor();
+  drawHorizontalPadding();
+  console.log(
+    `${color}${box.bottomLeft}${repeat(box.horizontal, innerWidth)}${box.bottomRight}${RESET}`,
+  );
 }
 
 /**
@@ -238,15 +293,12 @@ export function drawBottomBorder(
  * @param innerWidth - Width inside the frame (excluding borders)
  * @param box - Box characters to use (default: rounded)
  */
-export function drawDivider(
-	innerWidth: number,
-	box: typeof BOX = BOX,
-): void {
-	const color = getBorderColor();
-	drawHorizontalPadding();
-	console.log(
-		`${color}${box.teeLeft}${repeat(box.horizontal, innerWidth)}${box.teeRight}${RESET}`,
-	);
+export function drawDivider(innerWidth: number, box: typeof BOX = BOX): void {
+  const color = getBorderColor();
+  drawHorizontalPadding();
+  console.log(
+    `${color}${box.teeLeft}${repeat(box.horizontal, innerWidth)}${box.teeRight}${RESET}`,
+  );
 }
 
 /**
@@ -255,15 +307,12 @@ export function drawDivider(
  * @param innerWidth - Width inside the frame (excluding borders)
  * @param box - Box characters to use (default: rounded)
  */
-export function drawEmptyLine(
-	innerWidth: number,
-	box: typeof BOX = BOX,
-): void {
-	const color = getBorderColor();
-	drawHorizontalPadding();
-	console.log(
-		`${color}${box.vertical}${RESET}${repeat(" ", innerWidth)}${color}${box.vertical}${RESET}`,
-	);
+export function drawEmptyLine(innerWidth: number, box: typeof BOX = BOX): void {
+  const color = getBorderColor();
+  drawHorizontalPadding();
+  console.log(
+    `${color}${box.vertical}${RESET}${repeat(" ", innerWidth)}${color}${box.vertical}${RESET}`,
+  );
 }
 
 /**
@@ -275,18 +324,18 @@ export function drawEmptyLine(
  * @param box - Box characters to use (default: rounded)
  */
 export function drawLine(
-	content: string,
-	innerWidth: number,
-	box: typeof BOX = BOX,
+  content: string,
+  innerWidth: number,
+  box: typeof BOX = BOX,
 ): void {
-	const color = getBorderColor();
-	const contentLen = visibleLength(content);
-	const padding = Math.max(0, innerWidth - contentLen);
+  const color = getBorderColor();
+  const contentLen = visibleLength(content);
+  const padding = Math.max(0, innerWidth - contentLen);
 
-	drawHorizontalPadding();
-	console.log(
-		`${color}${box.vertical}${RESET}${content}${repeat(" ", padding)}${color}${box.vertical}${RESET}`,
-	);
+  drawHorizontalPadding();
+  console.log(
+    `${color}${box.vertical}${RESET}${content}${repeat(" ", padding)}${color}${box.vertical}${RESET}`,
+  );
 }
 
 /**
@@ -297,20 +346,20 @@ export function drawLine(
  * @param box - Box characters to use (default: rounded)
  */
 export function drawCenteredLine(
-	content: string,
-	innerWidth: number,
-	box: typeof BOX = BOX,
+  content: string,
+  innerWidth: number,
+  box: typeof BOX = BOX,
 ): void {
-	const color = getBorderColor();
-	const contentLen = visibleLength(content);
-	const totalPadding = Math.max(0, innerWidth - contentLen);
-	const leftPadding = Math.floor(totalPadding / 2);
-	const rightPadding = totalPadding - leftPadding;
+  const color = getBorderColor();
+  const contentLen = visibleLength(content);
+  const totalPadding = Math.max(0, innerWidth - contentLen);
+  const leftPadding = Math.floor(totalPadding / 2);
+  const rightPadding = totalPadding - leftPadding;
 
-	drawHorizontalPadding();
-	console.log(
-		`${color}${box.vertical}${RESET}${repeat(" ", leftPadding)}${content}${repeat(" ", rightPadding)}${color}${box.vertical}${RESET}`,
-	);
+  drawHorizontalPadding();
+  console.log(
+    `${color}${box.vertical}${RESET}${repeat(" ", leftPadding)}${content}${repeat(" ", rightPadding)}${color}${box.vertical}${RESET}`,
+  );
 }
 
 /**
@@ -321,18 +370,18 @@ export function drawCenteredLine(
  * @param box - Box characters to use (default: rounded)
  */
 export function drawRightAlignedLine(
-	content: string,
-	innerWidth: number,
-	box: typeof BOX = BOX,
+  content: string,
+  innerWidth: number,
+  box: typeof BOX = BOX,
 ): void {
-	const color = getBorderColor();
-	const contentLen = visibleLength(content);
-	const padding = Math.max(0, innerWidth - contentLen);
+  const color = getBorderColor();
+  const contentLen = visibleLength(content);
+  const padding = Math.max(0, innerWidth - contentLen);
 
-	drawHorizontalPadding();
-	console.log(
-		`${color}${box.vertical}${RESET}${repeat(" ", padding)}${content}${color}${box.vertical}${RESET}`,
-	);
+  drawHorizontalPadding();
+  console.log(
+    `${color}${box.vertical}${RESET}${repeat(" ", padding)}${content}${color}${box.vertical}${RESET}`,
+  );
 }
 
 // =============================================================================
@@ -345,10 +394,10 @@ export function drawRightAlignedLine(
  * @param count - Number of empty lines to draw (default: from layout config)
  */
 export function drawVerticalPadding(count?: number): void {
-	const lines = count ?? layoutConfig.paddingY;
-	for (let i = 0; i < lines; i++) {
-		console.log();
-	}
+  const lines = count ?? layoutConfig.paddingY;
+  for (let i = 0; i < lines; i++) {
+    console.log();
+  }
 }
 
 // =============================================================================
@@ -364,14 +413,14 @@ export function drawVerticalPadding(count?: number): void {
  * @returns Number of available content lines
  */
 export function calculateContentHeight(
-	headerLines: number,
-	footerLines: number,
-	dividers: number = 2,
+  headerLines: number,
+  footerLines: number,
+  dividers: number = 2,
 ): number {
-	const { height } = getFrameDimensions();
-	// Subtract: top border, bottom border, header, footer, dividers
-	const overhead = 2 + headerLines + footerLines + dividers;
-	return Math.max(1, height - overhead);
+  const { height } = getFrameDimensions();
+  // Subtract: top border, bottom border, header, footer, dividers
+  const overhead = 2 + headerLines + footerLines + dividers;
+  return Math.max(1, height - overhead);
 }
 
 /**
@@ -382,8 +431,8 @@ export function calculateContentHeight(
  * @returns The line string
  */
 export function horizontalRule(
-	width: number,
-	char: string = BOX.horizontal,
+  width: number,
+  char: string = BOX.horizontal,
 ): string {
-	return repeat(char, width);
+  return repeat(char, width);
 }

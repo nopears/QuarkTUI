@@ -57,9 +57,11 @@ export {
 // Box characters
 BOX, BOX_SHARP, BOX_DOUBLE, 
 // Layout configuration
-DEFAULT_PADDING_X, DEFAULT_PADDING_Y, setLayout, getLayout, getPadding, 
+DEFAULT_PADDING_X, DEFAULT_PADDING_Y, DEFAULT_MAX_FRAME_WIDTH, DEFAULT_FRAME_WIDTH_PERCENT, setLayout, getLayout, getPadding, 
 // Frame dimensions
-getFrameDimensions, calculateCenteringPadding, 
+getFrameDimensions, calculateCenteringPadding, calculateHorizontalCentering, calculateFrameWidth, 
+// Centered frame state
+beginCenteredFrame, endCenteredFrame, 
 // Drawing functions
 drawHorizontalPadding, drawVerticalPadding, drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawRightAlignedLine, 
 // Utilities

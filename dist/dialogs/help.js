@@ -7,7 +7,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, } from "../core/drawing";
 // =============================================================================
 // Key Detection
 // =============================================================================
@@ -57,9 +57,10 @@ function buildHelpLines(content) {
     return lines;
 }
 function renderHelp(content, contentLines, scrollOffset) {
-    const { width } = getFrameDimensions();
-    const innerWidth = width - 2;
     const theme = getCurrentTheme();
+    // Calculate frame width for horizontal centering
+    const frameWidth = calculateFrameWidth();
+    const innerWidth = frameWidth - 2;
     // Calculate actual content height
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = 4; // divider + empty + hint + empty
@@ -70,10 +71,12 @@ function renderHelp(content, contentLines, scrollOffset) {
         footerLineCount +
         maxContentLines +
         scrollIndicators;
-    // Calculate centering
+    // Calculate vertical centering
     const topPadding = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
+    // Set up horizontal centering
+    beginCenteredFrame(frameWidth);
     // Dynamic vertical padding
     drawVerticalPadding(topPadding);
     // Top border
@@ -118,6 +121,8 @@ function renderHelp(content, contentLines, scrollOffset) {
     drawLine(`  ${DIM}Press any key to close${RESET}`, innerWidth);
     drawEmptyLine(innerWidth);
     drawBottomBorder(innerWidth);
+    // End horizontal centering
+    endCenteredFrame();
 }
 // =============================================================================
 // Main Function
@@ -171,13 +176,10 @@ export async function showHelp(content) {
         process.stdout.off("resize", onResize);
         showCursor();
     };
-    // Calculate max scroll
+    // Calculate max scroll based on fixed content lines
+    const maxContentLines = 15;
     const getMaxScroll = () => {
-        const { height } = getFrameDimensions();
-        const headerLineCount = 4;
-        const footerLineCount = 4;
-        const availableContentLines = height - headerLineCount - footerLineCount - 2;
-        return Math.max(0, contentLines.length - availableContentLines);
+        return Math.max(0, contentLines.length - maxContentLines);
     };
     // Initial render
     renderHelp(content, contentLines, scrollOffset);

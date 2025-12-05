@@ -23,8 +23,10 @@ import {
   drawLine,
   drawCenteredLine,
   drawVerticalPadding,
-  getFrameDimensions,
   calculateCenteringPadding,
+  calculateFrameWidth,
+  beginCenteredFrame,
+  endCenteredFrame,
 } from "../core/drawing";
 import type {
   MenuOption,
@@ -64,7 +66,6 @@ function drawDefaultHeader(innerWidth: number, title: string): void {
 }
 
 function drawDefaultFooter(innerWidth: number): void {
-  const theme = getCurrentTheme();
   const hints = `${DIM}↑↓${RESET} Navigate  ${DIM}⏎${RESET} Select  ${DIM}q/⌫${RESET} Back`;
 
   drawEmptyLine(innerWidth);
@@ -80,9 +81,11 @@ function renderSelectMenu<T>(
   config: SelectMenuConfig<T>,
   selectedIndex: number,
 ): void {
-  const { width } = getFrameDimensions();
-  const innerWidth = width - 2;
   const theme = getCurrentTheme();
+
+  // Calculate frame width for horizontal centering
+  const frameWidth = calculateFrameWidth();
+  const innerWidth = frameWidth - 2;
 
   // Calculate actual content height
   const headerLineCount = 4; // empty + title + empty + divider
@@ -101,11 +104,14 @@ function renderSelectMenu<T>(
     maxVisibleOptions +
     scrollIndicators;
 
-  // Calculate centering
+  // Calculate vertical centering
   const topPadding = calculateCenteringPadding(contentHeight);
 
   clearScreen();
   hideCursor();
+
+  // Set up horizontal centering
+  beginCenteredFrame(frameWidth);
 
   // Dynamic vertical padding for centering
   drawVerticalPadding(topPadding);
@@ -219,6 +225,9 @@ function renderSelectMenu<T>(
   }
 
   drawBottomBorder(innerWidth);
+
+  // End horizontal centering
+  endCenteredFrame();
 }
 
 // =============================================================================

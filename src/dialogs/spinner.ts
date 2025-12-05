@@ -6,7 +6,7 @@
  */
 
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
-import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
+import { getCurrentTheme, RESET, BOLD } from "../core/theme";
 import {
   drawTopBorder,
   drawBottomBorder,
@@ -14,8 +14,10 @@ import {
   drawEmptyLine,
   drawCenteredLine,
   drawVerticalPadding,
-  getFrameDimensions,
   calculateCenteringPadding,
+  calculateFrameWidth,
+  beginCenteredFrame,
+  endCenteredFrame,
 } from "../core/drawing";
 
 import type { SpinnerOptions, SpinnerController } from "../types/menu";
@@ -100,9 +102,11 @@ function renderSpinner(
   frame: string,
   message: string,
 ): void {
-  const { width } = getFrameDimensions();
-  const innerWidth = width - 2;
   const theme = getCurrentTheme();
+
+  // Calculate frame width for horizontal centering
+  const frameWidth = calculateFrameWidth();
+  const innerWidth = frameWidth - 2;
 
   // Calculate actual content height
   const hasTitle = !!config.title;
@@ -116,11 +120,14 @@ function renderSpinner(
     footerLineCount +
     spinnerLineCount;
 
-  // Calculate centering
+  // Calculate vertical centering
   const topPadding = calculateCenteringPadding(contentHeight);
 
   clearScreen();
   hideCursor();
+
+  // Set up horizontal centering
+  beginCenteredFrame(frameWidth);
 
   // Dynamic vertical padding
   drawVerticalPadding(topPadding);
@@ -150,6 +157,9 @@ function renderSpinner(
   // Footer
   drawEmptyLine(innerWidth);
   drawBottomBorder(innerWidth);
+
+  // End horizontal centering
+  endCenteredFrame();
 }
 
 // =============================================================================
@@ -250,8 +260,10 @@ export function showSpinner(
       // Show final message if provided
       if (finalMessage) {
         const theme = getCurrentTheme();
-        const { width } = getFrameDimensions();
-        const innerWidth = width - 2;
+
+        // Calculate frame width for horizontal centering
+        const frameWidth = calculateFrameWidth();
+        const innerWidth = frameWidth - 2;
 
         const hasTitle = !!config.title;
         const headerLineCount = hasTitle ? 4 : 2;
@@ -268,6 +280,9 @@ export function showSpinner(
 
         clearScreen();
         hideCursor();
+
+        // Set up horizontal centering
+        beginCenteredFrame(frameWidth);
 
         drawVerticalPadding(topPadding);
         drawTopBorder(innerWidth);
@@ -292,6 +307,9 @@ export function showSpinner(
 
         drawEmptyLine(innerWidth);
         drawBottomBorder(innerWidth);
+
+        // End horizontal centering
+        endCenteredFrame();
       }
 
       showCursor();

@@ -7,7 +7,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isPrintable } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, } from "../core/drawing";
 // =============================================================================
 // Header & Footer
 // =============================================================================
@@ -28,9 +28,10 @@ function drawDefaultFooter(innerWidth) {
 // Rendering
 // =============================================================================
 function renderTextInput(config, value, errorMessage) {
-    const { width } = getFrameDimensions();
-    const innerWidth = width - 2;
     const theme = getCurrentTheme();
+    // Calculate frame width for horizontal centering
+    const frameWidth = calculateFrameWidth();
+    const innerWidth = frameWidth - 2;
     // Calculate actual content height
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = 4; // divider + empty + hints + empty
@@ -43,10 +44,12 @@ function renderTextInput(config, value, errorMessage) {
         infoLineCount +
         errorLineCount +
         inputLineCount;
-    // Calculate centering
+    // Calculate vertical centering
     const topPadding = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
+    // Set up horizontal centering
+    beginCenteredFrame(frameWidth);
     // Dynamic vertical padding
     drawVerticalPadding(topPadding);
     // Top border
@@ -103,6 +106,8 @@ function renderTextInput(config, value, errorMessage) {
         drawDefaultFooter(innerWidth);
     }
     drawBottomBorder(innerWidth);
+    // End horizontal centering
+    endCenteredFrame();
 }
 // =============================================================================
 // Main Function

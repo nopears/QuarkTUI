@@ -6,7 +6,7 @@
  */
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD } from "../core/theme";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, } from "../core/drawing";
 // =============================================================================
 // Default Spinner Frames
 // =============================================================================
@@ -58,9 +58,10 @@ export const SPINNER_BAR = [
 // Rendering
 // =============================================================================
 function renderSpinner(config, frame, message) {
-    const { width } = getFrameDimensions();
-    const innerWidth = width - 2;
     const theme = getCurrentTheme();
+    // Calculate frame width for horizontal centering
+    const frameWidth = calculateFrameWidth();
+    const innerWidth = frameWidth - 2;
     // Calculate actual content height
     const hasTitle = !!config.title;
     const headerLineCount = hasTitle ? 4 : 2;
@@ -70,10 +71,12 @@ function renderSpinner(config, frame, message) {
         headerLineCount +
         footerLineCount +
         spinnerLineCount;
-    // Calculate centering
+    // Calculate vertical centering
     const topPadding = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
+    // Set up horizontal centering
+    beginCenteredFrame(frameWidth);
     // Dynamic vertical padding
     drawVerticalPadding(topPadding);
     // Top border
@@ -97,6 +100,8 @@ function renderSpinner(config, frame, message) {
     // Footer
     drawEmptyLine(innerWidth);
     drawBottomBorder(innerWidth);
+    // End horizontal centering
+    endCenteredFrame();
 }
 // =============================================================================
 // Main Function
@@ -185,8 +190,9 @@ export function showSpinner(options) {
             // Show final message if provided
             if (finalMessage) {
                 const theme = getCurrentTheme();
-                const { width } = getFrameDimensions();
-                const innerWidth = width - 2;
+                // Calculate frame width for horizontal centering
+                const frameWidth = calculateFrameWidth();
+                const innerWidth = frameWidth - 2;
                 const hasTitle = !!config.title;
                 const headerLineCount = hasTitle ? 4 : 2;
                 const footerLineCount = 2;
@@ -198,6 +204,8 @@ export function showSpinner(options) {
                 const topPadding = calculateCenteringPadding(contentHeight);
                 clearScreen();
                 hideCursor();
+                // Set up horizontal centering
+                beginCenteredFrame(frameWidth);
                 drawVerticalPadding(topPadding);
                 drawTopBorder(innerWidth);
                 drawEmptyLine(innerWidth);
@@ -217,6 +225,8 @@ export function showSpinner(options) {
                 }
                 drawEmptyLine(innerWidth);
                 drawBottomBorder(innerWidth);
+                // End horizontal centering
+                endCenteredFrame();
             }
             showCursor();
         },
