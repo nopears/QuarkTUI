@@ -21,7 +21,7 @@ import {
   drawCenteredLine,
   drawVerticalPadding,
   getFrameDimensions,
-  getPadding,
+  calculateCenteringPadding,
 } from "../core/drawing";
 
 // =============================================================================
@@ -124,21 +124,31 @@ function renderHelp(
   contentLines: string[],
   scrollOffset: number,
 ): void {
-  const { width, height } = getFrameDimensions();
+  const { width } = getFrameDimensions();
   const innerWidth = width - 2;
   const theme = getCurrentTheme();
-  const { y: paddingY } = getPadding();
 
-  // Calculate layout
+  // Calculate actual content height
   const headerLineCount = 4; // empty + title + empty + divider
   const footerLineCount = 4; // divider + empty + hint + empty
-  const availableContentLines = height - headerLineCount - footerLineCount - 2;
+  const maxContentLines = Math.min(contentLines.length, 15); // cap visible content
+  const scrollIndicators = contentLines.length > maxContentLines ? 2 : 0;
+
+  const contentHeight =
+    2 + // borders
+    headerLineCount +
+    footerLineCount +
+    maxContentLines +
+    scrollIndicators;
+
+  // Calculate centering
+  const topPadding = calculateCenteringPadding(contentHeight);
 
   clearScreen();
   hideCursor();
 
-  // Vertical padding
-  drawVerticalPadding(paddingY);
+  // Dynamic vertical padding
+  drawVerticalPadding(topPadding);
 
   // Top border
   drawTopBorder(innerWidth);
@@ -153,7 +163,7 @@ function renderHelp(
 
   // Content with scrolling
   const totalLines = contentLines.length;
-  const maxScroll = Math.max(0, totalLines - availableContentLines);
+  const maxScroll = Math.max(0, totalLines - maxContentLines);
   const actualOffset = Math.min(scrollOffset, maxScroll);
 
   const hasMoreAbove = actualOffset > 0;
@@ -170,8 +180,7 @@ function renderHelp(
   // Draw visible content
   for (
     let i = actualOffset;
-    i < totalLines &&
-    linesDrawn < availableContentLines - (hasMoreBelow ? 1 : 0);
+    i < totalLines && linesDrawn < maxContentLines - (hasMoreBelow ? 1 : 0);
     i++
   ) {
     const line = contentLines[i] ?? "";
@@ -186,7 +195,7 @@ function renderHelp(
   }
 
   // Fill remaining space
-  while (linesDrawn < availableContentLines) {
+  while (linesDrawn < maxContentLines) {
     drawEmptyLine(innerWidth);
     linesDrawn++;
   }

@@ -6,7 +6,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isLeftKey, isRightKey, isConfirmKey, isBackKey, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
 // =============================================================================
 // Header & Footer
 // =============================================================================
@@ -27,19 +27,25 @@ function drawDefaultFooter(innerWidth) {
 // Rendering
 // =============================================================================
 function renderConfirm(config, selectedConfirm) {
-    const { width, height } = getFrameDimensions();
+    const { width } = getFrameDimensions();
     const innerWidth = width - 2;
     const theme = getCurrentTheme();
-    const { y: paddingY } = getPadding();
-    // Calculate layout
+    // Calculate actual content height
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = 4; // divider + empty + hints + empty
-    const messageLineCount = config.message ? 2 : 0; // message + empty
-    const availableContentLines = height - headerLineCount - footerLineCount - messageLineCount - 2;
+    const messageLineCount = config.message ? 2 : 0;
+    const buttonLineCount = 3; // padding + buttons + padding
+    const contentHeight = 2 + // borders
+        headerLineCount +
+        footerLineCount +
+        messageLineCount +
+        buttonLineCount;
+    // Calculate centering
+    const topPadding = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
-    // Vertical padding
-    drawVerticalPadding(paddingY);
+    // Dynamic vertical padding
+    drawVerticalPadding(topPadding);
     // Top border
     drawTopBorder(innerWidth);
     // Header
@@ -54,15 +60,6 @@ function renderConfirm(config, selectedConfirm) {
     if (config.message) {
         drawEmptyLine(innerWidth);
         drawCenteredLine(`${DIM}${config.message}${RESET}`, innerWidth);
-    }
-    // Calculate content centering
-    const contentLines = 1; // Just the button row
-    const extraLines = Math.max(0, availableContentLines - contentLines);
-    const topPadding = Math.floor(extraLines / 2);
-    const bottomPadding = extraLines - topPadding;
-    // Top padding for centering
-    for (let i = 0; i < topPadding; i++) {
-        drawEmptyLine(innerWidth);
     }
     // Button row
     const confirmLabel = config.confirmLabel ?? "Yes";
@@ -79,10 +76,8 @@ function renderConfirm(config, selectedConfirm) {
     }
     const buttonRow = `${confirmButton}    ${cancelButton}`;
     drawCenteredLine(buttonRow, innerWidth);
-    // Bottom padding for centering
-    for (let i = 0; i < bottomPadding; i++) {
-        drawEmptyLine(innerWidth);
-    }
+    // Spacing before buttons
+    drawEmptyLine(innerWidth);
     drawDivider(innerWidth);
     // Footer
     if (config.renderFooter) {

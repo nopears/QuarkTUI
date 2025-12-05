@@ -114,6 +114,13 @@ export interface FrameDimensions {
  */
 export declare function getFrameDimensions(termSize?: TerminalSize): FrameDimensions;
 /**
+ * Calculate vertical padding to center content of a specific height.
+ *
+ * @param contentHeight - Total lines the content will occupy (including borders, header, footer)
+ * @returns The number of empty lines to add at the top for centering
+ */
+export declare function calculateCenteringPadding(contentHeight: number): number;
+/**
  * Draw horizontal padding (spaces before the frame).
  */
 export declare function drawHorizontalPadding(): void;

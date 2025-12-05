@@ -119,6 +119,17 @@ export function getFrameDimensions(termSize) {
         innerHeight: height - 2, // Subtract top and bottom border
     };
 }
+/**
+ * Calculate vertical padding to center content of a specific height.
+ *
+ * @param contentHeight - Total lines the content will occupy (including borders, header, footer)
+ * @returns The number of empty lines to add at the top for centering
+ */
+export function calculateCenteringPadding(contentHeight) {
+    const { height } = getTerminalSize();
+    const padding = Math.max(0, Math.floor((height - contentHeight) / 2));
+    return padding;
+}
 // =============================================================================
 // Drawing Primitives
 // =============================================================================

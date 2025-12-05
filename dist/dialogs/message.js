@@ -8,7 +8,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypress } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
 const MESSAGE_TYPES = {
     info: { icon: "●", colorKey: "info" },
     success: { icon: "✓", colorKey: "success" },
@@ -19,21 +19,26 @@ const MESSAGE_TYPES = {
 // Rendering
 // =============================================================================
 function renderMessage(config) {
-    const { width, height } = getFrameDimensions();
+    const { width } = getFrameDimensions();
     const innerWidth = width - 2;
     const theme = getCurrentTheme();
-    const { y: paddingY } = getPadding();
     const type = config.type ?? "info";
     const typeConfig = MESSAGE_TYPES[type];
     const color = theme.colors[typeConfig.colorKey];
-    // Calculate layout
+    // Calculate actual content height
     const headerLineCount = 4; // empty + title + empty + divider
-    const footerLineCount = config.waitForKey ? 4 : 3; // divider + empty + [hint +] empty
-    const availableContentLines = height - headerLineCount - footerLineCount - 2;
+    const footerLineCount = config.waitForKey ? 4 : 3;
+    const contentLineCount = config.lines.length + 2; // lines + padding
+    const contentHeight = 2 + // borders
+        headerLineCount +
+        footerLineCount +
+        contentLineCount;
+    // Calculate centering
+    const topPadding = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
-    // Vertical padding
-    drawVerticalPadding(paddingY);
+    // Dynamic vertical padding
+    drawVerticalPadding(topPadding);
     // Top border
     drawTopBorder(innerWidth);
     // Header
@@ -50,15 +55,6 @@ function renderMessage(config) {
         drawEmptyLine(innerWidth);
     }
     drawDivider(innerWidth);
-    // Calculate content centering
-    const contentLineCount = config.lines.length;
-    const extraLines = Math.max(0, availableContentLines - contentLineCount);
-    const topPadding = Math.floor(extraLines / 2);
-    const bottomPadding = extraLines - topPadding;
-    // Top padding for centering
-    for (let i = 0; i < topPadding; i++) {
-        drawEmptyLine(innerWidth);
-    }
     // Content lines
     for (const line of config.lines) {
         if (config.centerLines) {
@@ -68,10 +64,8 @@ function renderMessage(config) {
             drawLine(`  ${line}`, innerWidth);
         }
     }
-    // Bottom padding for centering
-    for (let i = 0; i < bottomPadding; i++) {
-        drawEmptyLine(innerWidth);
-    }
+    // Spacing before buttons
+    drawEmptyLine(innerWidth);
     drawDivider(innerWidth);
     // Footer
     if (config.renderFooter) {

@@ -59,7 +59,7 @@ BOX, BOX_SHARP, BOX_DOUBLE,
 // Layout configuration
 DEFAULT_PADDING_X, DEFAULT_PADDING_Y, setLayout, getLayout, getPadding, 
 // Frame dimensions
-getFrameDimensions, 
+getFrameDimensions, calculateCenteringPadding, 
 // Drawing functions
 drawHorizontalPadding, drawVerticalPadding, drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawRightAlignedLine, 
 // Utilities

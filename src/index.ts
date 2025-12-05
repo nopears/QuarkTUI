@@ -54,22 +54,22 @@ export { Component, type ComponentConfig } from "./component";
 // =============================================================================
 
 export {
-  // Types
-  type Widget,
-  type RenderContext,
-  type WidgetType,
-  type Alignment,
-  type TextOptions,
-  type RowOptions,
-  type SpacerOptions,
-  type TableCell,
-  type TableColumn,
-  type TableOptions,
-  // Primitives
-  Text,
-  Spacer,
-  Row,
-  Table,
+	// Types
+	type Widget,
+	type RenderContext,
+	type WidgetType,
+	type Alignment,
+	type TextOptions,
+	type RowOptions,
+	type SpacerOptions,
+	type TableCell,
+	type TableColumn,
+	type TableOptions,
+	// Primitives
+	Text,
+	Spacer,
+	Row,
+	Table,
 } from "./widgets";
 
 // Renderer
@@ -80,36 +80,36 @@ export { render, renderFitted } from "./renderer";
 // =============================================================================
 
 export {
-  // Screen control
-  clearScreen,
-  clearToEnd,
-  clearLine,
-  // Cursor control
-  hideCursor,
-  showCursor,
-  moveCursor,
-  moveCursorUp,
-  moveCursorDown,
-  moveCursorLeft,
-  moveCursorRight,
-  saveCursorPosition,
-  restoreCursorPosition,
-  // Terminal info
-  getTerminalSize,
-  isTTY,
-  isInputTTY,
-  // Output
-  write,
-  writeLine,
-  bell,
-  // Alternate screen
-  enterAlternateScreen,
-  leaveAlternateScreen,
-  // Types
-  type TerminalSize,
-  // Constants
-  DEFAULT_WIDTH,
-  DEFAULT_HEIGHT,
+	// Screen control
+	clearScreen,
+	clearToEnd,
+	clearLine,
+	// Cursor control
+	hideCursor,
+	showCursor,
+	moveCursor,
+	moveCursorUp,
+	moveCursorDown,
+	moveCursorLeft,
+	moveCursorRight,
+	saveCursorPosition,
+	restoreCursorPosition,
+	// Terminal info
+	getTerminalSize,
+	isTTY,
+	isInputTTY,
+	// Output
+	write,
+	writeLine,
+	bell,
+	// Alternate screen
+	enterAlternateScreen,
+	leaveAlternateScreen,
+	// Types
+	type TerminalSize,
+	// Constants
+	DEFAULT_WIDTH,
+	DEFAULT_HEIGHT,
 } from "./core";
 
 // =============================================================================
@@ -117,32 +117,32 @@ export {
 // =============================================================================
 
 export {
-  // Theme management
-  getCurrentTheme,
-  setTheme,
-  onThemeChange,
-  getColors,
-  resetTheme,
-  createTheme,
-  // ANSI codes
-  RESET,
-  BOLD,
-  DIM,
-  ITALIC,
-  UNDERLINE,
-  INVERSE,
-  HIDDEN,
-  STRIKETHROUGH,
-  // Color helpers
-  fg,
-  bg,
-  fgRgb,
-  bgRgb,
-  ANSI,
-  ANSI_BG,
-  // Types
-  type Theme,
-  type ThemeColors,
+	// Theme management
+	getCurrentTheme,
+	setTheme,
+	onThemeChange,
+	getColors,
+	resetTheme,
+	createTheme,
+	// ANSI codes
+	RESET,
+	BOLD,
+	DIM,
+	ITALIC,
+	UNDERLINE,
+	INVERSE,
+	HIDDEN,
+	STRIKETHROUGH,
+	// Color helpers
+	fg,
+	bg,
+	fgRgb,
+	bgRgb,
+	ANSI,
+	ANSI_BG,
+	// Types
+	type Theme,
+	type ThemeColors,
 } from "./core";
 
 // =============================================================================
@@ -150,26 +150,26 @@ export {
 // =============================================================================
 
 export {
-  // Main styling function
-  style,
-  raw,
-  // String utilities
-  stripAnsi,
-  visibleLength,
-  repeat,
-  padRight,
-  padLeft,
-  padCenter,
-  truncate,
-  // Types
-  type StyleType,
-  // Deprecated (for backward compatibility)
-  formatDim,
-  formatBold,
-  formatSuccess,
-  formatError,
-  formatWarning,
-  formatInfo,
+	// Main styling function
+	style,
+	raw,
+	// String utilities
+	stripAnsi,
+	visibleLength,
+	repeat,
+	padRight,
+	padLeft,
+	padCenter,
+	truncate,
+	// Types
+	type StyleType,
+	// Deprecated (for backward compatibility)
+	formatDim,
+	formatBold,
+	formatSuccess,
+	formatError,
+	formatWarning,
+	formatInfo,
 } from "./core";
 
 // =============================================================================
@@ -177,25 +177,25 @@ export {
 // =============================================================================
 
 export {
-  // Handler creation
-  createKeyboardHandler,
-  // Single keypress utilities
-  waitForKeypress,
-  waitForKeypressCancellable,
-  // Key detection
-  isBackKey,
-  isConfirmKey,
-  isUpKey,
-  isDownKey,
-  isLeftKey,
-  isRightKey,
-  isHelpKey,
-  getNumberKey,
-  isPrintable,
-  // Types
-  type KeypressEvent,
-  type KeyboardHandler,
-  type KeyboardHandlerOptions,
+	// Handler creation
+	createKeyboardHandler,
+	// Single keypress utilities
+	waitForKeypress,
+	waitForKeypressCancellable,
+	// Key detection
+	isBackKey,
+	isConfirmKey,
+	isUpKey,
+	isDownKey,
+	isLeftKey,
+	isRightKey,
+	isHelpKey,
+	getNumberKey,
+	isPrintable,
+	// Types
+	type KeypressEvent,
+	type KeyboardHandler,
+	type KeyboardHandlerOptions,
 } from "./core";
 
 // =============================================================================
@@ -203,34 +203,34 @@ export {
 // =============================================================================
 
 export {
-  // Box characters
-  BOX,
-  BOX_SHARP,
-  BOX_DOUBLE,
-  // Layout configuration
-  DEFAULT_PADDING_X,
-  DEFAULT_PADDING_Y,
-  setLayout,
-  getLayout,
-  getPadding,
-  // Frame dimensions
-  getFrameDimensions,
-  // Drawing functions
-  drawHorizontalPadding,
-  drawVerticalPadding,
-  drawTopBorder,
-  drawBottomBorder,
-  drawDivider,
-  drawEmptyLine,
-  drawLine,
-  drawCenteredLine,
-  drawRightAlignedLine,
-  // Utilities
-  calculateContentHeight,
-  horizontalRule,
-  // Types
-  type LayoutConfig,
-  type FrameDimensions,
+	// Box characters
+	BOX,
+	BOX_SHARP,
+	BOX_DOUBLE,
+	// Layout configuration
+	DEFAULT_PADDING_X,
+	DEFAULT_PADDING_Y,
+	setLayout,
+	getLayout,
+	getPadding,
+	// Frame dimensions
+	getFrameDimensions,
+	// Drawing functions
+	drawHorizontalPadding,
+	drawVerticalPadding,
+	drawTopBorder,
+	drawBottomBorder,
+	drawDivider,
+	drawEmptyLine,
+	drawLine,
+	drawCenteredLine,
+	drawRightAlignedLine,
+	// Utilities
+	calculateContentHeight,
+	horizontalRule,
+	// Types
+	type LayoutConfig,
+	type FrameDimensions,
 } from "./core";
 
 // =============================================================================
@@ -238,11 +238,11 @@ export {
 // =============================================================================
 
 export {
-  selectMenu,
-  type SelectMenuConfig,
-  type MenuOption,
-  type SelectMenuOptions,
-  type SelectResult,
+	selectMenu,
+	type SelectMenuConfig,
+	type MenuOption,
+	type SelectMenuOptions,
+	type SelectResult,
 } from "./dialogs";
 
 // =============================================================================
@@ -250,11 +250,11 @@ export {
 // =============================================================================
 
 export {
-  textInput,
-  passwordInput,
-  type TextInputConfig,
-  type TextInputOptions,
-  type TextInputResult,
+	textInput,
+	passwordInput,
+	type TextInputConfig,
+	type TextInputOptions,
+	type TextInputResult,
 } from "./dialogs";
 
 // =============================================================================
@@ -262,11 +262,11 @@ export {
 // =============================================================================
 
 export {
-  confirm,
-  confirmYesNo,
-  type ConfirmConfig,
-  type ConfirmOptions,
-  type ConfirmResult,
+	confirm,
+	confirmYesNo,
+	type ConfirmConfig,
+	type ConfirmOptions,
+	type ConfirmResult,
 } from "./dialogs";
 
 // =============================================================================
@@ -274,16 +274,16 @@ export {
 // =============================================================================
 
 export {
-  showMessage,
-  showMessageAndWait,
-  message,
-  info,
-  success,
-  warning,
-  error,
-  type MessageConfig,
-  type MessageType,
-  type MessageOptions,
+	showMessage,
+	showMessageAndWait,
+	message,
+	info,
+	success,
+	warning,
+	error,
+	type MessageConfig,
+	type MessageType,
+	type MessageOptions,
 } from "./dialogs";
 
 // =============================================================================
@@ -291,19 +291,19 @@ export {
 // =============================================================================
 
 export {
-  showSpinner,
-  withSpinner,
-  // Spinner frame presets
-  SPINNER_DOTS,
-  SPINNER_LINE,
-  SPINNER_ARC,
-  SPINNER_CIRCLE,
-  SPINNER_BOX,
-  SPINNER_BOUNCE,
-  SPINNER_BAR,
-  type SpinnerConfig,
-  type SpinnerOptions,
-  type SpinnerController,
+	showSpinner,
+	withSpinner,
+	// Spinner frame presets
+	SPINNER_DOTS,
+	SPINNER_LINE,
+	SPINNER_ARC,
+	SPINNER_CIRCLE,
+	SPINNER_BOX,
+	SPINNER_BOUNCE,
+	SPINNER_BAR,
+	type SpinnerConfig,
+	type SpinnerOptions,
+	type SpinnerController,
 } from "./dialogs";
 
 // =============================================================================
@@ -311,12 +311,12 @@ export {
 // =============================================================================
 
 export {
-  showHelp,
-  mergeHelpContent,
-  createSimpleHelp,
-  type KeyBinding,
-  type HelpSection,
-  type HelpContent,
+	showHelp,
+	mergeHelpContent,
+	createSimpleHelp,
+	type KeyBinding,
+	type HelpSection,
+	type HelpContent,
 } from "./dialogs";
 
 // =============================================================================
@@ -324,12 +324,12 @@ export {
 // =============================================================================
 
 export {
-  pickFile,
-  pickFileByExtension,
-  pickFolder,
-  pickFolderFromHome,
-  type FilePickerOptions,
-  type FolderPickerOptions,
+	pickFile,
+	pickFileByExtension,
+	pickFolder,
+	pickFolderFromHome,
+	type FilePickerOptions,
+	type FolderPickerOptions,
 } from "./pickers";
 
 // =============================================================================
@@ -343,8 +343,8 @@ export type { ThemeProvider } from "./types";
 // =============================================================================
 
 export {
-  createWindow,
-  type WindowConfig,
-  type WindowActions,
-  type WindowInstance,
+	createWindow,
+	type WindowConfig,
+	type WindowActions,
+	type WindowInstance,
 } from "./window";

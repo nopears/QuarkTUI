@@ -22,7 +22,7 @@ import {
   drawCenteredLine,
   drawVerticalPadding,
   getFrameDimensions,
-  getPadding,
+  calculateCenteringPadding,
 } from "../core/drawing";
 import type { ConfirmOptions, ConfirmResult } from "../types/menu";
 
@@ -68,23 +68,31 @@ function drawDefaultFooter(innerWidth: number): void {
 // =============================================================================
 
 function renderConfirm(config: ConfirmConfig, selectedConfirm: boolean): void {
-  const { width, height } = getFrameDimensions();
+  const { width } = getFrameDimensions();
   const innerWidth = width - 2;
   const theme = getCurrentTheme();
-  const { y: paddingY } = getPadding();
 
-  // Calculate layout
+  // Calculate actual content height
   const headerLineCount = 4; // empty + title + empty + divider
   const footerLineCount = 4; // divider + empty + hints + empty
-  const messageLineCount = config.message ? 2 : 0; // message + empty
-  const availableContentLines =
-    height - headerLineCount - footerLineCount - messageLineCount - 2;
+  const messageLineCount = config.message ? 2 : 0;
+  const buttonLineCount = 3; // padding + buttons + padding
+
+  const contentHeight =
+    2 + // borders
+    headerLineCount +
+    footerLineCount +
+    messageLineCount +
+    buttonLineCount;
+
+  // Calculate centering
+  const topPadding = calculateCenteringPadding(contentHeight);
 
   clearScreen();
   hideCursor();
 
-  // Vertical padding
-  drawVerticalPadding(paddingY);
+  // Dynamic vertical padding
+  drawVerticalPadding(topPadding);
 
   // Top border
   drawTopBorder(innerWidth);
@@ -102,17 +110,6 @@ function renderConfirm(config: ConfirmConfig, selectedConfirm: boolean): void {
   if (config.message) {
     drawEmptyLine(innerWidth);
     drawCenteredLine(`${DIM}${config.message}${RESET}`, innerWidth);
-  }
-
-  // Calculate content centering
-  const contentLines = 1; // Just the button row
-  const extraLines = Math.max(0, availableContentLines - contentLines);
-  const topPadding = Math.floor(extraLines / 2);
-  const bottomPadding = extraLines - topPadding;
-
-  // Top padding for centering
-  for (let i = 0; i < topPadding; i++) {
-    drawEmptyLine(innerWidth);
   }
 
   // Button row
@@ -133,10 +130,8 @@ function renderConfirm(config: ConfirmConfig, selectedConfirm: boolean): void {
   const buttonRow = `${confirmButton}    ${cancelButton}`;
   drawCenteredLine(buttonRow, innerWidth);
 
-  // Bottom padding for centering
-  for (let i = 0; i < bottomPadding; i++) {
-    drawEmptyLine(innerWidth);
-  }
+  // Spacing before buttons
+  drawEmptyLine(innerWidth);
 
   drawDivider(innerWidth);
 
