@@ -8,7 +8,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypress } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
 const MESSAGE_TYPES = {
     info: { icon: "●", colorKey: "info" },
     success: { icon: "✓", colorKey: "success" },
@@ -19,24 +19,22 @@ const MESSAGE_TYPES = {
 // Rendering
 // =============================================================================
 function renderMessage(config) {
-    const frameWidth = calculateFrameWidth(60, 0.8);
-    const innerWidth = frameWidth - 2;
+    const { width, height } = getFrameDimensions();
+    const innerWidth = width - 2;
     const theme = getCurrentTheme();
+    const { y: paddingY } = getPadding();
     const type = config.type ?? "info";
     const typeConfig = MESSAGE_TYPES[type];
     const color = theme.colors[typeConfig.colorKey];
-    // Calculate content height for vertical centering
+    // Calculate layout
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = config.waitForKey ? 4 : 3; // divider + empty + [hint +] empty
     const contentLineCount = config.lines.length;
-    const totalHeight = headerLineCount + contentLineCount + footerLineCount + 2; // +2 for borders
-    const topPadding = calculateCenteringPadding(totalHeight);
+    const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for borders
     clearScreen();
     hideCursor();
-    // Vertical padding for centering
-    drawVerticalPadding(topPadding);
-    // Begin centered frame
-    beginCenteredFrame(frameWidth);
+    // Vertical padding
+    drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
     // Header
@@ -56,6 +54,7 @@ function renderMessage(config) {
     // Internal padding (space between border and content)
     const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
     // Content lines
+    let linesDrawn = 0;
     for (const line of config.lines) {
         if (config.centerLines) {
             drawCenteredLine(line, innerWidth);
@@ -63,6 +62,12 @@ function renderMessage(config) {
         else {
             drawLine(`${pad}${line}`, innerWidth);
         }
+        linesDrawn++;
+    }
+    // Fill remaining space
+    while (linesDrawn < availableContentLines) {
+        drawEmptyLine(innerWidth);
+        linesDrawn++;
     }
     drawDivider(innerWidth);
     // Footer
@@ -77,8 +82,6 @@ function renderMessage(config) {
         drawEmptyLine(innerWidth);
     }
     drawBottomBorder(innerWidth);
-    // End centered frame
-    endCenteredFrame();
 }
 // =============================================================================
 // Main Functions

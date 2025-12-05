@@ -14,10 +14,8 @@ import {
   drawEmptyLine,
   drawCenteredLine,
   drawVerticalPadding,
-  calculateCenteringPadding,
-  calculateFrameWidth,
-  beginCenteredFrame,
-  endCenteredFrame,
+  getFrameDimensions,
+  getPadding,
 } from "../core/drawing";
 
 import type { SpinnerOptions, SpinnerController } from "../types/menu";
@@ -102,28 +100,23 @@ function renderSpinner(
   frame: string,
   message: string,
 ): void {
-  const frameWidth = calculateFrameWidth(50, 0.6);
-  const innerWidth = frameWidth - 2;
+  const { width, height } = getFrameDimensions();
+  const innerWidth = width - 2;
   const theme = getCurrentTheme();
+  const { y: paddingY } = getPadding();
 
-  // Calculate content height
+  // Calculate layout
   const hasTitle = !!config.title;
   const headerLineCount = hasTitle ? 4 : 2; // empty + [title + empty + divider] OR just empty
-  const footerLineCount = 2; // empty + border
+  const footerLineCount = 2; // empty + border (no border line, just empty before bottom)
   const spinnerLineCount = 1;
-  const contentHeight =
-    headerLineCount + footerLineCount + spinnerLineCount + 2; // +2 for top/bottom borders
-
-  const topPadding = calculateCenteringPadding(contentHeight);
+  const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for top/bottom borders
 
   clearScreen();
   hideCursor();
 
-  // Vertical centering padding
-  drawVerticalPadding(topPadding);
-
-  // Begin horizontal centering
-  beginCenteredFrame(frameWidth);
+  // Vertical padding
+  drawVerticalPadding(paddingY);
 
   // Top border
   drawTopBorder(innerWidth);
@@ -137,9 +130,25 @@ function renderSpinner(
     drawDivider(innerWidth);
   }
 
+  // Calculate centering for spinner within available space
+  const contentLines = 1; // Just the spinner line
+  const extraLines = Math.max(0, availableContentLines - contentLines);
+  const topPadding = Math.floor(extraLines / 2);
+  const bottomPadding = extraLines - topPadding;
+
+  // Top padding for centering
+  for (let i = 0; i < topPadding; i++) {
+    drawEmptyLine(innerWidth);
+  }
+
   // Spinner line (centered)
   const spinnerLine = `${theme.colors.highlight}${frame}${RESET} ${message}`;
   drawCenteredLine(spinnerLine, innerWidth);
+
+  // Bottom padding for centering
+  for (let i = 0; i < bottomPadding; i++) {
+    drawEmptyLine(innerWidth);
+  }
 
   if (hasTitle) {
     drawDivider(innerWidth);
@@ -148,9 +157,66 @@ function renderSpinner(
   // Footer
   drawEmptyLine(innerWidth);
   drawBottomBorder(innerWidth);
+}
 
-  // End horizontal centering
-  endCenteredFrame();
+function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
+  const { width, height } = getFrameDimensions();
+  const innerWidth = width - 2;
+  const theme = getCurrentTheme();
+  const { y: paddingY } = getPadding();
+
+  // Calculate layout
+  const hasTitle = !!config.title;
+  const headerLineCount = hasTitle ? 4 : 2;
+  const footerLineCount = 2;
+  const messageLineCount = 1;
+  const availableContentLines = height - headerLineCount - footerLineCount - 2;
+
+  clearScreen();
+  hideCursor();
+
+  // Vertical padding
+  drawVerticalPadding(paddingY);
+
+  // Top border
+  drawTopBorder(innerWidth);
+
+  // Header
+  drawEmptyLine(innerWidth);
+  if (hasTitle) {
+    const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
+    drawCenteredLine(styledTitle, innerWidth);
+    drawEmptyLine(innerWidth);
+    drawDivider(innerWidth);
+  }
+
+  // Calculate centering for message within available space
+  const contentLines = messageLineCount;
+  const extraLines = Math.max(0, availableContentLines - contentLines);
+  const topPadding = Math.floor(extraLines / 2);
+  const bottomPadding = extraLines - topPadding;
+
+  // Top padding for centering
+  for (let i = 0; i < topPadding; i++) {
+    drawEmptyLine(innerWidth);
+  }
+
+  // Success message line (centered)
+  const successLine = `${theme.colors.success}✓${RESET} ${finalMessage}`;
+  drawCenteredLine(successLine, innerWidth);
+
+  // Bottom padding for centering
+  for (let i = 0; i < bottomPadding; i++) {
+    drawEmptyLine(innerWidth);
+  }
+
+  if (hasTitle) {
+    drawDivider(innerWidth);
+  }
+
+  // Footer
+  drawEmptyLine(innerWidth);
+  drawBottomBorder(innerWidth);
 }
 
 // =============================================================================
@@ -250,47 +316,7 @@ export function showSpinner(
 
       // Show final message if provided
       if (finalMessage) {
-        const theme = getCurrentTheme();
-        const frameWidth = calculateFrameWidth(50, 0.6);
-        const innerWidth = frameWidth - 2;
-
-        const hasTitle = !!config.title;
-        const headerLineCount = hasTitle ? 4 : 2;
-        const footerLineCount = 2;
-        const messageLineCount = 1;
-        const contentHeight =
-          headerLineCount + footerLineCount + messageLineCount + 2;
-
-        const topPadding = calculateCenteringPadding(contentHeight);
-
-        clearScreen();
-        hideCursor();
-
-        drawVerticalPadding(topPadding);
-
-        beginCenteredFrame(frameWidth);
-
-        drawTopBorder(innerWidth);
-        drawEmptyLine(innerWidth);
-
-        if (hasTitle) {
-          const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
-          drawCenteredLine(styledTitle, innerWidth);
-          drawEmptyLine(innerWidth);
-          drawDivider(innerWidth);
-        }
-
-        const successLine = `${theme.colors.success}✓${RESET} ${finalMessage}`;
-        drawCenteredLine(successLine, innerWidth);
-
-        if (hasTitle) {
-          drawDivider(innerWidth);
-        }
-
-        drawEmptyLine(innerWidth);
-        drawBottomBorder(innerWidth);
-
-        endCenteredFrame();
+        renderFinalMessage(config, finalMessage);
       }
 
       showCursor();

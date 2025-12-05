@@ -17,10 +17,8 @@ import {
   drawLine,
   drawCenteredLine,
   drawVerticalPadding,
-  calculateCenteringPadding,
-  calculateFrameWidth,
-  beginCenteredFrame,
-  endCenteredFrame,
+  getFrameDimensions,
+  getPadding,
   DEFAULT_INTERNAL_PADDING,
 } from "../core/drawing";
 import type { MessageType, MessageOptions } from "../types/menu";
@@ -64,30 +62,26 @@ const MESSAGE_TYPES: Record<MessageType, MessageTypeConfig> = {
 // =============================================================================
 
 function renderMessage(config: MessageConfig): void {
-  const frameWidth = calculateFrameWidth(60, 0.8);
-  const innerWidth = frameWidth - 2;
+  const { width, height } = getFrameDimensions();
+  const innerWidth = width - 2;
   const theme = getCurrentTheme();
+  const { y: paddingY } = getPadding();
 
   const type = config.type ?? "info";
   const typeConfig = MESSAGE_TYPES[type];
   const color = theme.colors[typeConfig.colorKey];
 
-  // Calculate content height for vertical centering
+  // Calculate layout
   const headerLineCount = 4; // empty + title + empty + divider
   const footerLineCount = config.waitForKey ? 4 : 3; // divider + empty + [hint +] empty
   const contentLineCount = config.lines.length;
-  const totalHeight = headerLineCount + contentLineCount + footerLineCount + 2; // +2 for borders
-
-  const topPadding = calculateCenteringPadding(totalHeight);
+  const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for borders
 
   clearScreen();
   hideCursor();
 
-  // Vertical padding for centering
-  drawVerticalPadding(topPadding);
-
-  // Begin centered frame
-  beginCenteredFrame(frameWidth);
+  // Vertical padding
+  drawVerticalPadding(paddingY);
 
   // Top border
   drawTopBorder(innerWidth);
@@ -112,12 +106,20 @@ function renderMessage(config: MessageConfig): void {
   const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
 
   // Content lines
+  let linesDrawn = 0;
   for (const line of config.lines) {
     if (config.centerLines) {
       drawCenteredLine(line, innerWidth);
     } else {
       drawLine(`${pad}${line}`, innerWidth);
     }
+    linesDrawn++;
+  }
+
+  // Fill remaining space
+  while (linesDrawn < availableContentLines) {
+    drawEmptyLine(innerWidth);
+    linesDrawn++;
   }
 
   drawDivider(innerWidth);
@@ -137,9 +139,6 @@ function renderMessage(config: MessageConfig): void {
   }
 
   drawBottomBorder(innerWidth);
-
-  // End centered frame
-  endCenteredFrame();
 }
 
 // =============================================================================
