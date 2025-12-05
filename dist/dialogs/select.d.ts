@@ -16,6 +16,12 @@ export interface SelectMenuConfig<T> extends SelectMenuOptions<T> {
     renderFooter?: (innerWidth: number) => void;
     /** Allow number keys for quick selection (default: true if <= 9 items) */
     allowNumberKeys?: boolean;
+    /** App name displayed first (e.g., "♪ LAZYGIG") */
+    appName?: string;
+    /** Page name displayed after app name on same line */
+    subtitle?: string;
+    /** Description displayed below on its own line */
+    description?: string;
 }
 /**
  * Display a select menu and wait for user selection.
@@ -37,6 +43,21 @@ export interface SelectMenuConfig<T> extends SelectMenuOptions<T> {
  * if (result.type === "selected") {
  *   console.log("Selected:", result.value);
  * }
+ * ```
+ *
+ * @example
+ * ```ts
+ * // With app name and description
+ * const result = await selectMenu({
+ *   title: "Main Menu",
+ *   appName: "♪ LAZYGIG",
+ *   subtitle: "Settings",
+ *   description: "Configure your preferences",
+ *   options: [
+ *     { label: "Theme", value: "theme" },
+ *     { label: "Audio", value: "audio" },
+ *   ],
+ * });
  * ```
  */
 export declare function selectMenu<T = string>(options: SelectMenuOptions<T> | SelectMenuConfig<T>): Promise<SelectResult<T>>;

@@ -7,40 +7,73 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isUpKey, isDownKey, isConfirmKey, isBackKey, getNumberKey, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, calculateFrameWidth, beginCenteredFrame, endCenteredFrame, } from "../core/drawing";
 // =============================================================================
 // Header & Footer
 // =============================================================================
-function drawDefaultHeader(innerWidth, title) {
+function drawDefaultHeader(innerWidth, title, appName, subtitle, description) {
     const theme = getCurrentTheme();
-    const styledTitle = `${BOLD}${theme.colors.accent}${title}${RESET}`;
+    // Line 1: Empty line
     drawEmptyLine(innerWidth);
-    drawCenteredLine(styledTitle, innerWidth);
+    // Line 2: [AppName bold+accent]  [title or subtitle dim] - centered
+    if (appName) {
+        const styledAppName = `${BOLD}${theme.colors.accent}${appName}${RESET}`;
+        const displaySubtitle = subtitle || title;
+        const styledSubtitle = `${DIM}${displaySubtitle}${RESET}`;
+        const headerLine = `${styledAppName}  ${styledSubtitle}`;
+        drawCenteredLine(headerLine, innerWidth);
+    }
+    else {
+        const styledTitle = `${BOLD}${theme.colors.accent}${title}${RESET}`;
+        drawCenteredLine(styledTitle, innerWidth);
+    }
+    // Line 3: [description muted] OR empty line - centered
+    if (description) {
+        const styledDescription = `${theme.colors.textMuted}${description}${RESET}`;
+        drawCenteredLine(styledDescription, innerWidth);
+    }
+    else {
+        drawEmptyLine(innerWidth);
+    }
+    // Line 4: Empty line
     drawEmptyLine(innerWidth);
 }
 function drawDefaultFooter(innerWidth) {
     const hints = `${DIM}↑↓${RESET} Navigate  ${DIM}⏎${RESET} Select  ${DIM}q/⌫${RESET} Back`;
     drawEmptyLine(innerWidth);
-    drawLine(`  ${hints}`, innerWidth);
+    drawCenteredLine(hints, innerWidth);
     drawEmptyLine(innerWidth);
 }
 // =============================================================================
 // Rendering
 // =============================================================================
 function renderSelectMenu(config, selectedIndex) {
-    const { width, height } = getFrameDimensions();
-    const innerWidth = width - 2;
     const theme = getCurrentTheme();
-    const { y: paddingY } = getPadding();
-    // Calculate layout
-    const headerLineCount = 4; // empty + title + empty + divider
+    // Calculate frame width for centering
+    const frameWidth = calculateFrameWidth(70, 0.85);
+    const innerWidth = frameWidth - 2;
+    // Calculate content height
+    const headerLineCount = 4; // empty + title + description/empty + empty + divider
     const footerLineCount = 4; // divider + empty + hints + empty
     const infoLineCount = config.infoLines ? config.infoLines.length + 1 : 0; // +1 for spacing
-    const availableContentLines = height - headerLineCount - footerLineCount - infoLineCount - 2; // -2 for borders
+    const optionCount = config.options.length;
+    const scrollIndicators = 2; // Potential scroll indicators
+    const bordersAndDividers = 4; // top border, bottom border, 2 dividers
+    // Estimate visible options (we'll adjust dynamically)
+    const estimatedOptionsVisible = Math.min(optionCount + scrollIndicators, 15);
+    const contentHeight = headerLineCount +
+        footerLineCount +
+        infoLineCount +
+        estimatedOptionsVisible +
+        bordersAndDividers;
+    // Calculate vertical centering padding
+    const topPaddingLines = calculateCenteringPadding(contentHeight);
     clearScreen();
     hideCursor();
-    // Vertical padding
-    drawVerticalPadding(paddingY);
+    // Begin centered frame
+    beginCenteredFrame(frameWidth);
+    // Vertical padding for centering
+    drawVerticalPadding(topPaddingLines);
     // Top border
     drawTopBorder(innerWidth);
     // Header
@@ -48,7 +81,7 @@ function renderSelectMenu(config, selectedIndex) {
         config.renderHeader(innerWidth);
     }
     else {
-        drawDefaultHeader(innerWidth, config.title);
+        drawDefaultHeader(innerWidth, config.title, config.appName, config.subtitle, config.description);
     }
     drawDivider(innerWidth);
     // Info lines (if any)
@@ -58,8 +91,15 @@ function renderSelectMenu(config, selectedIndex) {
         }
         drawEmptyLine(innerWidth);
     }
+    // Calculate available lines for options
+    const { height } = getFrameDimensions();
+    const usedLines = topPaddingLines +
+        headerLineCount +
+        footerLineCount +
+        infoLineCount +
+        bordersAndDividers;
+    const availableContentLines = Math.max(5, height - usedLines);
     // Calculate visible range for scrolling
-    const optionCount = config.options.length;
     let startIndex = 0;
     let endIndex = Math.min(optionCount, availableContentLines);
     // Adjust visible range if selected item would be out of view
@@ -132,6 +172,8 @@ function renderSelectMenu(config, selectedIndex) {
         drawDefaultFooter(innerWidth);
     }
     drawBottomBorder(innerWidth);
+    // End centered frame
+    endCenteredFrame();
 }
 // =============================================================================
 // Main Function
@@ -156,6 +198,21 @@ function renderSelectMenu(config, selectedIndex) {
  * if (result.type === "selected") {
  *   console.log("Selected:", result.value);
  * }
+ * ```
+ *
+ * @example
+ * ```ts
+ * // With app name and description
+ * const result = await selectMenu({
+ *   title: "Main Menu",
+ *   appName: "♪ LAZYGIG",
+ *   subtitle: "Settings",
+ *   description: "Configure your preferences",
+ *   options: [
+ *     { label: "Theme", value: "theme" },
+ *     { label: "Audio", value: "audio" },
+ *   ],
+ * });
  * ```
  */
 export async function selectMenu(options) {
