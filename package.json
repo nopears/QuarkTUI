@@ -1,0 +1,50 @@
+{
+	"name": "quarktui",
+	"version": "0.0.1",
+	"description": "A lightweight TUI component framework for building interactive terminal applications",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"typecheck": "tsc --noEmit",
+		"clean": "rm -rf dist",
+		"prepublishOnly": "npm run clean && npm run build"
+	},
+	"keywords": [
+		"tui",
+		"terminal",
+		"cli",
+		"ui",
+		"components",
+		"framework",
+		"typescript"
+	],
+	"author": "nopears",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nopears/QuarkTUI.git"
+	},
+	"bugs": {
+		"url": "https://github.com/nopears/QuarkTUI/issues"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^24.10.1",
+		"typescript": "^5.0.0"
+	}
+}
