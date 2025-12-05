@@ -120,7 +120,7 @@ function renderSpinner(
   // Top border
   drawTopBorder(innerWidth);
 
-  // Header (4 lines: empty + title + empty + divider)
+  // Header (4 lines: empty + title + empty + empty) - matches select menu
   drawEmptyLine(innerWidth);
   if (config.title) {
     const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
@@ -131,6 +131,7 @@ function renderSpinner(
       innerWidth,
     );
   }
+  drawEmptyLine(innerWidth);
   drawEmptyLine(innerWidth);
   drawDivider(innerWidth);
 
@@ -183,7 +184,7 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
   // Top border
   drawTopBorder(innerWidth);
 
-  // Header (4 lines: empty + title + empty + divider)
+  // Header (4 lines: empty + title + empty + empty) - matches select menu
   drawEmptyLine(innerWidth);
   if (config.title) {
     const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
@@ -194,6 +195,7 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
       innerWidth,
     );
   }
+  drawEmptyLine(innerWidth);
   drawEmptyLine(innerWidth);
   drawDivider(innerWidth);
 

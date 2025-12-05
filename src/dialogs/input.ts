@@ -50,8 +50,10 @@ function drawDefaultHeader(innerWidth: number, title: string): void {
   const theme = getCurrentTheme();
   const styledTitle = `${BOLD}${theme.colors.accent}${title}${RESET}`;
 
+  // Header (4 lines: empty + title + empty + empty) - matches select menu
   drawEmptyLine(innerWidth);
   drawCenteredLine(styledTitle, innerWidth);
+  drawEmptyLine(innerWidth);
   drawEmptyLine(innerWidth);
 }
 

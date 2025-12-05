@@ -73,7 +73,7 @@ function renderSpinner(config, frame, message) {
     drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
-    // Header (4 lines: empty + title + empty + divider)
+    // Header (4 lines: empty + title + empty + empty) - matches select menu
     drawEmptyLine(innerWidth);
     if (config.title) {
         const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
@@ -82,6 +82,7 @@ function renderSpinner(config, frame, message) {
     else {
         drawCenteredLine(`${BOLD}${theme.colors.accent}Loading${RESET}`, innerWidth);
     }
+    drawEmptyLine(innerWidth);
     drawEmptyLine(innerWidth);
     drawDivider(innerWidth);
     // Calculate centering for spinner within available space
@@ -123,7 +124,7 @@ function renderFinalMessage(config, finalMessage) {
     drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
-    // Header (4 lines: empty + title + empty + divider)
+    // Header (4 lines: empty + title + empty + empty) - matches select menu
     drawEmptyLine(innerWidth);
     if (config.title) {
         const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
@@ -132,6 +133,7 @@ function renderFinalMessage(config, finalMessage) {
     else {
         drawCenteredLine(`${BOLD}${theme.colors.accent}Complete${RESET}`, innerWidth);
     }
+    drawEmptyLine(innerWidth);
     drawEmptyLine(innerWidth);
     drawDivider(innerWidth);
     // Calculate centering for message within available space

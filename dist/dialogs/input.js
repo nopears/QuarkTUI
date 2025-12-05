@@ -14,8 +14,10 @@ import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, 
 function drawDefaultHeader(innerWidth, title) {
     const theme = getCurrentTheme();
     const styledTitle = `${BOLD}${theme.colors.accent}${title}${RESET}`;
+    // Header (4 lines: empty + title + empty + empty) - matches select menu
     drawEmptyLine(innerWidth);
     drawCenteredLine(styledTitle, innerWidth);
+    drawEmptyLine(innerWidth);
     drawEmptyLine(innerWidth);
 }
 function drawDefaultFooter(innerWidth) {

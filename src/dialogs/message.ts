@@ -86,7 +86,7 @@ function renderMessage(config: MessageConfig): void {
   // Top border
   drawTopBorder(innerWidth);
 
-  // Header
+  // Header (4 lines: empty + title + description/empty + empty)
   if (config.renderHeader) {
     config.renderHeader(innerWidth);
   } else {
@@ -95,8 +95,13 @@ function renderMessage(config: MessageConfig): void {
       ? `${icon} ${BOLD}${config.title}${RESET}`
       : icon;
 
+    // Line 1: Empty line
     drawEmptyLine(innerWidth);
+    // Line 2: Title with icon
     drawCenteredLine(styledTitle, innerWidth);
+    // Line 3: Empty line (matches select menu's description line)
+    drawEmptyLine(innerWidth);
+    // Line 4: Empty line
     drawEmptyLine(innerWidth);
   }
 

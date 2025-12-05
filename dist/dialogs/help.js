@@ -71,10 +71,11 @@ function renderHelp(content, contentLines, scrollOffset) {
     drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
-    // Header
+    // Header (4 lines: empty + title + empty + empty) - matches select menu
     drawEmptyLine(innerWidth);
     const title = `${BOLD}${theme.colors.accent}? HELP${RESET}  ${DIM}${content.screenName}${RESET}`;
     drawCenteredLine(title, innerWidth);
+    drawEmptyLine(innerWidth);
     drawEmptyLine(innerWidth);
     drawDivider(innerWidth);
     // Content with scrolling
