@@ -24,10 +24,7 @@ import {
   drawCenteredLine,
   drawVerticalPadding,
   getFrameDimensions,
-  calculateCenteringPadding,
-  calculateFrameWidth,
-  beginCenteredFrame,
-  endCenteredFrame,
+  getPadding,
 } from "../core/drawing";
 import type {
   MenuOption,
@@ -115,41 +112,24 @@ function renderSelectMenu<T>(
   config: SelectMenuConfig<T>,
   selectedIndex: number,
 ): void {
+  const { width, height } = getFrameDimensions();
+  const innerWidth = width - 2;
   const theme = getCurrentTheme();
+  const { y: paddingY } = getPadding();
 
-  // Calculate frame width for centering
-  const frameWidth = calculateFrameWidth(70, 0.85);
-  const innerWidth = frameWidth - 2;
-
-  // Calculate content height
+  // Calculate layout
   const headerLineCount = 4; // empty + title + description/empty + empty + divider
   const footerLineCount = 4; // divider + empty + hints + empty
   const infoLineCount = config.infoLines ? config.infoLines.length + 1 : 0; // +1 for spacing
+  const availableContentLines =
+    height - headerLineCount - footerLineCount - infoLineCount - 2; // -2 for borders
   const optionCount = config.options.length;
-  const scrollIndicators = 2; // Potential scroll indicators
-  const bordersAndDividers = 4; // top border, bottom border, 2 dividers
-
-  // Estimate visible options (we'll adjust dynamically)
-  const estimatedOptionsVisible = Math.min(optionCount + scrollIndicators, 15);
-
-  const contentHeight =
-    headerLineCount +
-    footerLineCount +
-    infoLineCount +
-    estimatedOptionsVisible +
-    bordersAndDividers;
-
-  // Calculate vertical centering padding
-  const topPaddingLines = calculateCenteringPadding(contentHeight);
 
   clearScreen();
   hideCursor();
 
-  // Begin centered frame
-  beginCenteredFrame(frameWidth);
-
-  // Vertical padding for centering
-  drawVerticalPadding(topPaddingLines);
+  // Vertical padding
+  drawVerticalPadding(paddingY);
 
   // Top border
   drawTopBorder(innerWidth);
@@ -176,16 +156,6 @@ function renderSelectMenu<T>(
     }
     drawEmptyLine(innerWidth);
   }
-
-  // Calculate available lines for options
-  const { height } = getFrameDimensions();
-  const usedLines =
-    topPaddingLines +
-    headerLineCount +
-    footerLineCount +
-    infoLineCount +
-    bordersAndDividers;
-  const availableContentLines = Math.max(5, height - usedLines);
 
   // Calculate visible range for scrolling
   let startIndex = 0;
@@ -275,9 +245,6 @@ function renderSelectMenu<T>(
   }
 
   drawBottomBorder(innerWidth);
-
-  // End centered frame
-  endCenteredFrame();
 }
 
 // =============================================================================
