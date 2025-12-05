@@ -4,16 +4,19 @@
  * Manages the full lifecycle of a UI screen: rendering, keyboard handling, and cleanup.
  * Provides a consistent pattern for all interactive screens in the application.
  */
-import { style, getFrameDimensions, clearScreen, hideCursor, showCursor, DEFAULT_PADDING_Y, drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, createKeyboardHandler, isBackKey, isHelpKey, showHelp, } from "./index";
+import { style, getFrameDimensions, getPadding, clearScreen, hideCursor, showCursor, drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, createKeyboardHandler, isBackKey, isHelpKey, showHelp, } from "./index";
 // =============================================================================
 // Layout Constants
 // =============================================================================
-// Header: empty line + title + description + empty line = 4 lines
+// Match dialog overhead calculation exactly:
+// Dialogs use: height - headerLineCount(4) - footerLineCount(4) - 2 = height - 10
+// Header: 4 lines (empty + title + desc + empty)
+// Footer: 4 lines (divider + empty + hints + empty) - includes divider before footer
+// Borders: 2 lines (top + bottom)
+// Note: divider after header is drawn but not counted (same as dialogs)
 const HEADER_LINE_COUNT = 4;
-// Footer: empty line + hints + empty line = 3 lines minimum
-const FOOTER_BASE_LINE_COUNT = 3;
-// Borders and dividers: top border + divider after header + divider before footer + bottom border
-const FRAME_OVERHEAD = 4;
+const FOOTER_LINE_COUNT = 4;
+const BORDER_OVERHEAD = 2;
 // =============================================================================
 // Formatting Helpers
 // =============================================================================
@@ -60,22 +63,19 @@ function drawWindowFooter(innerWidth, hints) {
     drawLine(`  ${formattedHints}`, innerWidth);
     drawEmptyLine(innerWidth);
 }
-function calculateContentHeight(terminalHeight) {
-    // Total overhead: DEFAULT_PADDING_Y + header + footer + frame elements
-    const totalOverhead = DEFAULT_PADDING_Y +
-        HEADER_LINE_COUNT +
-        FOOTER_BASE_LINE_COUNT +
-        FRAME_OVERHEAD;
-    return Math.max(1, terminalHeight - totalOverhead);
+function calculateContentHeight(frameHeight) {
+    // frameHeight is already adjusted for vertical padding (from getFrameDimensions)
+    // Match dialogs exactly: height - 4 - 4 - 2 = height - 10
+    const totalOverhead = HEADER_LINE_COUNT + FOOTER_LINE_COUNT + BORDER_OVERHEAD;
+    return Math.max(1, frameHeight - totalOverhead);
 }
 function renderWindow(config, ctx) {
     const { innerWidth, contentHeight } = ctx;
+    const { y: paddingY } = getPadding();
     clearScreen();
     hideCursor();
     // Vertical padding
-    for (let i = 0; i < DEFAULT_PADDING_Y; i++) {
-        console.log();
-    }
+    drawVerticalPadding(paddingY);
     drawTopBorder(innerWidth);
     drawWindowHeader(innerWidth, config.title, config.subtitle, config.description);
     drawDivider(innerWidth);
