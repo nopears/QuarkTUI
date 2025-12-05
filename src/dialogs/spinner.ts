@@ -6,7 +6,7 @@
  */
 
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
-import { getCurrentTheme, RESET, BOLD } from "../core/theme";
+import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import {
   drawTopBorder,
   drawBottomBorder,
@@ -105,10 +105,9 @@ function renderSpinner(
   const theme = getCurrentTheme();
   const { y: paddingY } = getPadding();
 
-  // Calculate layout
-  const hasTitle = !!config.title;
-  const headerLineCount = hasTitle ? 4 : 2; // empty + [title + empty + divider] OR just empty
-  const footerLineCount = 2; // empty + border (no border line, just empty before bottom)
+  // Calculate layout (consistent with other dialogs)
+  const headerLineCount = 4; // empty + title + empty + divider
+  const footerLineCount = 4; // divider + empty + hint + empty
   const spinnerLineCount = 1;
   const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for top/bottom borders
 
@@ -121,14 +120,19 @@ function renderSpinner(
   // Top border
   drawTopBorder(innerWidth);
 
-  // Header
+  // Header (4 lines: empty + title + empty + divider)
   drawEmptyLine(innerWidth);
-  if (hasTitle) {
+  if (config.title) {
     const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
     drawCenteredLine(styledTitle, innerWidth);
-    drawEmptyLine(innerWidth);
-    drawDivider(innerWidth);
+  } else {
+    drawCenteredLine(
+      `${BOLD}${theme.colors.accent}Loading${RESET}`,
+      innerWidth,
+    );
   }
+  drawEmptyLine(innerWidth);
+  drawDivider(innerWidth);
 
   // Calculate centering for spinner within available space
   const contentLines = 1; // Just the spinner line
@@ -150,11 +154,10 @@ function renderSpinner(
     drawEmptyLine(innerWidth);
   }
 
-  if (hasTitle) {
-    drawDivider(innerWidth);
-  }
-
-  // Footer
+  // Footer (4 lines: divider + empty + hint + empty)
+  drawDivider(innerWidth);
+  drawEmptyLine(innerWidth);
+  drawCenteredLine(`${DIM}Please wait...${RESET}`, innerWidth);
   drawEmptyLine(innerWidth);
   drawBottomBorder(innerWidth);
 }
@@ -165,10 +168,9 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
   const theme = getCurrentTheme();
   const { y: paddingY } = getPadding();
 
-  // Calculate layout
-  const hasTitle = !!config.title;
-  const headerLineCount = hasTitle ? 4 : 2;
-  const footerLineCount = 2;
+  // Calculate layout (consistent with other dialogs)
+  const headerLineCount = 4; // empty + title + empty + divider
+  const footerLineCount = 4; // divider + empty + hint + empty
   const messageLineCount = 1;
   const availableContentLines = height - headerLineCount - footerLineCount - 2;
 
@@ -181,14 +183,19 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
   // Top border
   drawTopBorder(innerWidth);
 
-  // Header
+  // Header (4 lines: empty + title + empty + divider)
   drawEmptyLine(innerWidth);
-  if (hasTitle) {
+  if (config.title) {
     const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
     drawCenteredLine(styledTitle, innerWidth);
-    drawEmptyLine(innerWidth);
-    drawDivider(innerWidth);
+  } else {
+    drawCenteredLine(
+      `${BOLD}${theme.colors.accent}Complete${RESET}`,
+      innerWidth,
+    );
   }
+  drawEmptyLine(innerWidth);
+  drawDivider(innerWidth);
 
   // Calculate centering for message within available space
   const contentLines = messageLineCount;
@@ -210,11 +217,10 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
     drawEmptyLine(innerWidth);
   }
 
-  if (hasTitle) {
-    drawDivider(innerWidth);
-  }
-
-  // Footer
+  // Footer (4 lines: divider + empty + hint + empty)
+  drawDivider(innerWidth);
+  drawEmptyLine(innerWidth);
+  drawEmptyLine(innerWidth);
   drawEmptyLine(innerWidth);
   drawBottomBorder(innerWidth);
 }

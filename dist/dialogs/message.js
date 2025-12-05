@@ -26,9 +26,9 @@ function renderMessage(config) {
     const type = config.type ?? "info";
     const typeConfig = MESSAGE_TYPES[type];
     const color = theme.colors[typeConfig.colorKey];
-    // Calculate layout
+    // Calculate layout (consistent with other dialogs)
     const headerLineCount = 4; // empty + title + empty + divider
-    const footerLineCount = config.waitForKey ? 4 : 3; // divider + empty + [hint +] empty
+    const footerLineCount = 4; // divider + empty + hint/empty + empty
     const contentLineCount = config.lines.length;
     const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for borders
     clearScreen();
@@ -70,7 +70,7 @@ function renderMessage(config) {
         linesDrawn++;
     }
     drawDivider(innerWidth);
-    // Footer
+    // Footer (4 lines: divider + empty + hint/empty + empty)
     if (config.renderFooter) {
         config.renderFooter(innerWidth);
     }
@@ -78,6 +78,9 @@ function renderMessage(config) {
         drawEmptyLine(innerWidth);
         if (config.waitForKey) {
             drawCenteredLine(`${DIM}Press any key to continue...${RESET}`, innerWidth);
+        }
+        else {
+            drawEmptyLine(innerWidth);
         }
         drawEmptyLine(innerWidth);
     }
