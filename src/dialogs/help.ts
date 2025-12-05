@@ -20,7 +20,7 @@ import {
   drawCenteredLine,
   drawVerticalPadding,
   getFrameDimensions,
-  calculateCenteringPadding,
+  getPadding,
 } from "../core/drawing";
 
 // =============================================================================
@@ -123,31 +123,21 @@ function renderHelp(
   contentLines: string[],
   scrollOffset: number,
 ): void {
-  const { width } = getFrameDimensions();
+  const { width, height } = getFrameDimensions();
   const innerWidth = width - 2;
   const theme = getCurrentTheme();
+  const { y: paddingY } = getPadding();
 
-  // Calculate actual content height
+  // Calculate layout
   const headerLineCount = 4; // empty + title + empty + divider
   const footerLineCount = 4; // divider + empty + hint + empty
-  const maxContentLines = Math.min(contentLines.length, 15); // cap visible content
-  const scrollIndicators = contentLines.length > maxContentLines ? 2 : 0;
-
-  const contentHeight =
-    2 + // borders
-    headerLineCount +
-    footerLineCount +
-    maxContentLines +
-    scrollIndicators;
-
-  // Calculate vertical centering
-  const topPadding = calculateCenteringPadding(contentHeight);
+  const availableContentLines = height - headerLineCount - footerLineCount - 2;
 
   clearScreen();
   hideCursor();
 
-  // Dynamic vertical padding
-  drawVerticalPadding(topPadding);
+  // Vertical padding
+  drawVerticalPadding(paddingY);
 
   // Top border
   drawTopBorder(innerWidth);
@@ -162,7 +152,7 @@ function renderHelp(
 
   // Content with scrolling
   const totalLines = contentLines.length;
-  const maxScroll = Math.max(0, totalLines - maxContentLines);
+  const maxScroll = Math.max(0, totalLines - availableContentLines);
   const actualOffset = Math.min(scrollOffset, maxScroll);
 
   const hasMoreAbove = actualOffset > 0;
@@ -179,7 +169,8 @@ function renderHelp(
   // Draw visible content
   for (
     let i = actualOffset;
-    i < totalLines && linesDrawn < maxContentLines - (hasMoreBelow ? 1 : 0);
+    i < totalLines &&
+    linesDrawn < availableContentLines - (hasMoreBelow ? 1 : 0);
     i++
   ) {
     const line = contentLines[i] ?? "";
@@ -194,7 +185,7 @@ function renderHelp(
   }
 
   // Fill remaining space
-  while (linesDrawn < maxContentLines) {
+  while (linesDrawn < availableContentLines) {
     drawEmptyLine(innerWidth);
     linesDrawn++;
   }
@@ -265,10 +256,14 @@ export async function showHelp(content: HelpContent): Promise<void> {
     showCursor();
   };
 
-  // Calculate max scroll based on fixed content lines
-  const maxContentLines = 15;
+  // Calculate max scroll
   const getMaxScroll = () => {
-    return Math.max(0, contentLines.length - maxContentLines);
+    const { height } = getFrameDimensions();
+    const headerLineCount = 4;
+    const footerLineCount = 4;
+    const availableContentLines =
+      height - headerLineCount - footerLineCount - 2;
+    return Math.max(0, contentLines.length - availableContentLines);
   };
 
   // Initial render

@@ -7,7 +7,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
 // =============================================================================
 // Key Detection
 // =============================================================================
@@ -57,25 +57,18 @@ function buildHelpLines(content) {
     return lines;
 }
 function renderHelp(content, contentLines, scrollOffset) {
-    const { width } = getFrameDimensions();
+    const { width, height } = getFrameDimensions();
     const innerWidth = width - 2;
     const theme = getCurrentTheme();
-    // Calculate actual content height
+    const { y: paddingY } = getPadding();
+    // Calculate layout
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = 4; // divider + empty + hint + empty
-    const maxContentLines = Math.min(contentLines.length, 15); // cap visible content
-    const scrollIndicators = contentLines.length > maxContentLines ? 2 : 0;
-    const contentHeight = 2 + // borders
-        headerLineCount +
-        footerLineCount +
-        maxContentLines +
-        scrollIndicators;
-    // Calculate vertical centering
-    const topPadding = calculateCenteringPadding(contentHeight);
+    const availableContentLines = height - headerLineCount - footerLineCount - 2;
     clearScreen();
     hideCursor();
-    // Dynamic vertical padding
-    drawVerticalPadding(topPadding);
+    // Vertical padding
+    drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
     // Header
@@ -86,7 +79,7 @@ function renderHelp(content, contentLines, scrollOffset) {
     drawDivider(innerWidth);
     // Content with scrolling
     const totalLines = contentLines.length;
-    const maxScroll = Math.max(0, totalLines - maxContentLines);
+    const maxScroll = Math.max(0, totalLines - availableContentLines);
     const actualOffset = Math.min(scrollOffset, maxScroll);
     const hasMoreAbove = actualOffset > 0;
     const hasMoreBelow = actualOffset < maxScroll;
@@ -97,7 +90,8 @@ function renderHelp(content, contentLines, scrollOffset) {
         linesDrawn++;
     }
     // Draw visible content
-    for (let i = actualOffset; i < totalLines && linesDrawn < maxContentLines - (hasMoreBelow ? 1 : 0); i++) {
+    for (let i = actualOffset; i < totalLines &&
+        linesDrawn < availableContentLines - (hasMoreBelow ? 1 : 0); i++) {
         const line = contentLines[i] ?? "";
         drawLine(`  ${line}`, innerWidth);
         linesDrawn++;
@@ -108,7 +102,7 @@ function renderHelp(content, contentLines, scrollOffset) {
         linesDrawn++;
     }
     // Fill remaining space
-    while (linesDrawn < maxContentLines) {
+    while (linesDrawn < availableContentLines) {
         drawEmptyLine(innerWidth);
         linesDrawn++;
     }
@@ -171,10 +165,13 @@ export async function showHelp(content) {
         process.stdout.off("resize", onResize);
         showCursor();
     };
-    // Calculate max scroll based on fixed content lines
-    const maxContentLines = 15;
+    // Calculate max scroll
     const getMaxScroll = () => {
-        return Math.max(0, contentLines.length - maxContentLines);
+        const { height } = getFrameDimensions();
+        const headerLineCount = 4;
+        const footerLineCount = 4;
+        const availableContentLines = height - headerLineCount - footerLineCount - 2;
+        return Math.max(0, contentLines.length - availableContentLines);
     };
     // Initial render
     renderHelp(content, contentLines, scrollOffset);

@@ -7,7 +7,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isPrintable } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
 // =============================================================================
 // Header & Footer
 // =============================================================================
@@ -28,27 +28,25 @@ function drawDefaultFooter(innerWidth) {
 // Rendering
 // =============================================================================
 function renderTextInput(config, value, errorMessage) {
-    const { width } = getFrameDimensions();
+    const { width, height } = getFrameDimensions();
     const innerWidth = width - 2;
     const theme = getCurrentTheme();
-    // Calculate actual content height
+    const { y: paddingY } = getPadding();
+    // Calculate layout
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = 4; // divider + empty + hints + empty
     const infoLineCount = config.infoLines ? config.infoLines.length + 1 : 0;
-    const errorLineCount = errorMessage ? 2 : 0;
-    const inputLineCount = 3; // padding + input + padding
-    const contentHeight = 2 + // borders
-        headerLineCount +
-        footerLineCount +
-        infoLineCount +
-        errorLineCount +
-        inputLineCount;
-    // Calculate vertical centering
-    const topPadding = calculateCenteringPadding(contentHeight);
+    const errorLineCount = errorMessage ? 2 : 0; // empty + error
+    const availableContentLines = height -
+        headerLineCount -
+        footerLineCount -
+        infoLineCount -
+        errorLineCount -
+        2;
     clearScreen();
     hideCursor();
-    // Dynamic vertical padding
-    drawVerticalPadding(topPadding);
+    // Vertical padding
+    drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
     // Header
@@ -64,6 +62,15 @@ function renderTextInput(config, value, errorMessage) {
         for (const line of config.infoLines) {
             drawLine(`  ${DIM}${line}${RESET}`, innerWidth);
         }
+        drawEmptyLine(innerWidth);
+    }
+    // Calculate content centering
+    const contentLines = 1; // Just the input line
+    const extraLines = Math.max(0, availableContentLines - contentLines);
+    const topPadding = Math.floor(extraLines / 2);
+    const bottomPadding = extraLines - topPadding;
+    // Top padding for centering
+    for (let i = 0; i < topPadding; i++) {
         drawEmptyLine(innerWidth);
     }
     // Input line
@@ -87,8 +94,10 @@ function renderTextInput(config, value, errorMessage) {
             : "";
         drawLine(`  ${prefix}${cursor}${placeholder}`, innerWidth);
     }
-    // Spacing before buttons
-    drawEmptyLine(innerWidth);
+    // Bottom padding for centering
+    for (let i = 0; i < bottomPadding; i++) {
+        drawEmptyLine(innerWidth);
+    }
     // Error message (if any)
     if (errorMessage) {
         drawEmptyLine(innerWidth);

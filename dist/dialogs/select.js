@@ -7,7 +7,7 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isUpKey, isDownKey, isConfirmKey, isBackKey, getNumberKey, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, calculateCenteringPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
 // =============================================================================
 // Header & Footer
 // =============================================================================
@@ -28,28 +28,19 @@ function drawDefaultFooter(innerWidth) {
 // Rendering
 // =============================================================================
 function renderSelectMenu(config, selectedIndex) {
-    const { width } = getFrameDimensions();
+    const { width, height } = getFrameDimensions();
     const innerWidth = width - 2;
     const theme = getCurrentTheme();
-    // Calculate actual content height
+    const { y: paddingY } = getPadding();
+    // Calculate layout
     const headerLineCount = 4; // empty + title + empty + divider
     const footerLineCount = 4; // divider + empty + hints + empty
-    const infoLineCount = config.infoLines ? config.infoLines.length + 1 : 0;
-    // Visible options (cap at reasonable max)
-    const maxVisibleOptions = Math.min(config.options.length, 12);
-    const scrollIndicators = config.options.length > maxVisibleOptions ? 2 : 0;
-    const contentHeight = 2 + // top and bottom borders
-        headerLineCount +
-        footerLineCount +
-        infoLineCount +
-        maxVisibleOptions +
-        scrollIndicators;
-    // Calculate vertical centering
-    const topPadding = calculateCenteringPadding(contentHeight);
+    const infoLineCount = config.infoLines ? config.infoLines.length + 1 : 0; // +1 for spacing
+    const availableContentLines = height - headerLineCount - footerLineCount - infoLineCount - 2; // -2 for borders
     clearScreen();
     hideCursor();
-    // Dynamic vertical padding for centering
-    drawVerticalPadding(topPadding);
+    // Vertical padding
+    drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
     // Header
@@ -70,15 +61,15 @@ function renderSelectMenu(config, selectedIndex) {
     // Calculate visible range for scrolling
     const optionCount = config.options.length;
     let startIndex = 0;
-    let endIndex = Math.min(optionCount, maxVisibleOptions);
+    let endIndex = Math.min(optionCount, availableContentLines);
     // Adjust visible range if selected item would be out of view
     if (selectedIndex >= endIndex) {
         endIndex = selectedIndex + 1;
-        startIndex = Math.max(0, endIndex - maxVisibleOptions);
+        startIndex = Math.max(0, endIndex - availableContentLines);
     }
     else if (selectedIndex < startIndex) {
         startIndex = selectedIndex;
-        endIndex = Math.min(optionCount, startIndex + maxVisibleOptions);
+        endIndex = Math.min(optionCount, startIndex + availableContentLines);
     }
     // Show scroll indicator at top if needed
     const hasMoreAbove = startIndex > 0;
@@ -89,7 +80,7 @@ function renderSelectMenu(config, selectedIndex) {
         drawLine(`  ${DIM}↑ more...${RESET}`, innerWidth);
         linesDrawn++;
     }
-    for (let i = startIndex; i < endIndex && linesDrawn < maxVisibleOptions; i++) {
+    for (let i = startIndex; i < endIndex && linesDrawn < availableContentLines; i++) {
         const opt = config.options[i];
         if (!opt)
             continue;
@@ -128,7 +119,7 @@ function renderSelectMenu(config, selectedIndex) {
         linesDrawn++;
     }
     // Fill remaining space
-    while (linesDrawn < maxVisibleOptions) {
+    while (linesDrawn < availableContentLines) {
         drawEmptyLine(innerWidth);
         linesDrawn++;
     }

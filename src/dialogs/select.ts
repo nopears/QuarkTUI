@@ -24,7 +24,7 @@ import {
   drawCenteredLine,
   drawVerticalPadding,
   getFrameDimensions,
-  calculateCenteringPadding,
+  getPadding,
 } from "../core/drawing";
 import type {
   MenuOption,
@@ -79,35 +79,23 @@ function renderSelectMenu<T>(
   config: SelectMenuConfig<T>,
   selectedIndex: number,
 ): void {
-  const { width } = getFrameDimensions();
+  const { width, height } = getFrameDimensions();
   const innerWidth = width - 2;
   const theme = getCurrentTheme();
+  const { y: paddingY } = getPadding();
 
-  // Calculate actual content height
+  // Calculate layout
   const headerLineCount = 4; // empty + title + empty + divider
   const footerLineCount = 4; // divider + empty + hints + empty
-  const infoLineCount = config.infoLines ? config.infoLines.length + 1 : 0;
-
-  // Visible options (cap at reasonable max)
-  const maxVisibleOptions = Math.min(config.options.length, 12);
-  const scrollIndicators = config.options.length > maxVisibleOptions ? 2 : 0;
-
-  const contentHeight =
-    2 + // top and bottom borders
-    headerLineCount +
-    footerLineCount +
-    infoLineCount +
-    maxVisibleOptions +
-    scrollIndicators;
-
-  // Calculate vertical centering
-  const topPadding = calculateCenteringPadding(contentHeight);
+  const infoLineCount = config.infoLines ? config.infoLines.length + 1 : 0; // +1 for spacing
+  const availableContentLines =
+    height - headerLineCount - footerLineCount - infoLineCount - 2; // -2 for borders
 
   clearScreen();
   hideCursor();
 
-  // Dynamic vertical padding for centering
-  drawVerticalPadding(topPadding);
+  // Vertical padding
+  drawVerticalPadding(paddingY);
 
   // Top border
   drawTopBorder(innerWidth);
@@ -132,15 +120,15 @@ function renderSelectMenu<T>(
   // Calculate visible range for scrolling
   const optionCount = config.options.length;
   let startIndex = 0;
-  let endIndex = Math.min(optionCount, maxVisibleOptions);
+  let endIndex = Math.min(optionCount, availableContentLines);
 
   // Adjust visible range if selected item would be out of view
   if (selectedIndex >= endIndex) {
     endIndex = selectedIndex + 1;
-    startIndex = Math.max(0, endIndex - maxVisibleOptions);
+    startIndex = Math.max(0, endIndex - availableContentLines);
   } else if (selectedIndex < startIndex) {
     startIndex = selectedIndex;
-    endIndex = Math.min(optionCount, startIndex + maxVisibleOptions);
+    endIndex = Math.min(optionCount, startIndex + availableContentLines);
   }
 
   // Show scroll indicator at top if needed
@@ -157,7 +145,7 @@ function renderSelectMenu<T>(
 
   for (
     let i = startIndex;
-    i < endIndex && linesDrawn < maxVisibleOptions;
+    i < endIndex && linesDrawn < availableContentLines;
     i++
   ) {
     const opt = config.options[i];
@@ -203,7 +191,7 @@ function renderSelectMenu<T>(
   }
 
   // Fill remaining space
-  while (linesDrawn < maxVisibleOptions) {
+  while (linesDrawn < availableContentLines) {
     drawEmptyLine(innerWidth);
     linesDrawn++;
   }
