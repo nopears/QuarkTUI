@@ -32,7 +32,9 @@ export type WidgetType =
   | "row"
   | "table"
   | "progress"
-  | "list";
+  | "list"
+  | "divider"
+  | "columns";
 
 /**
  * Base interface for all widgets.

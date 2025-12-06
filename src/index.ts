@@ -70,6 +70,11 @@ export {
   type ListItem,
   type ListOptions,
   type ListStyle,
+  type DividerOptions,
+  type DividerStyle,
+  type ColumnDef,
+  type ColumnWidth,
+  type ColumnsOptions,
   // Primitives
   Text,
   Spacer,
@@ -81,6 +86,10 @@ export {
   BulletList,
   NumberedList,
   CheckboxList,
+  Divider,
+  HR,
+  Columns,
+  KeyValue,
 } from "./widgets";
 
 // Renderer

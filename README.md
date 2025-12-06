@@ -363,6 +363,123 @@ CheckboxList([
 - `showScrollIndicators`: Show ↑/↓ when clipped (default: true)
 - `startNumber`: Starting number for numbered lists (default: 1)
 
+### Divider
+
+Horizontal separator line with optional label.
+
+```typescript
+import { Divider, HR } from "quarktui";
+
+// Simple horizontal line
+Divider()
+
+// Divider with centered label
+Divider("Section Title")
+
+// Divider with custom style
+Divider({
+  style: "double",
+  label: "Important",
+  labelStyle: "bold",
+})
+
+// Dashed divider with left-aligned label
+Divider({
+  style: "dashed",
+  label: "Options",
+  labelAlign: "left",
+  labelStyle: ["bold", "warning"],
+})
+
+// Custom character divider
+Divider({ char: "·", lineStyle: "dim" })
+
+// Shorthand for simple line
+HR()           // Simple line
+HR("double")   // Double line ═══
+HR("dashed")   // Dashed line ╌╌╌
+```
+
+**Styles:** `"line"` (─), `"double"` (═), `"thick"` (━), `"dashed"` (╌), `"dotted"` (┄), `"space"`
+
+**Options:**
+- `style`: Line style (default: `"line"`)
+- `label`: Optional text label
+- `labelAlign`: Label position - `"left"`, `"center"`, `"right"`
+- `labelStyle`: Style(s) for the label
+- `lineStyle`: Style(s) for the line (default: `"dim"`)
+- `labelPadding`: Space around label (default: 1)
+- `char`: Custom line character
+- `width`: Fixed width (default: full width)
+- `margin`: Left/right margin (default: 0)
+
+### Columns
+
+Multi-column layout with flexible widths.
+
+```typescript
+import { Columns, KeyValue } from "quarktui";
+
+// Simple two-column layout
+Columns(["Left content", "Right content"])
+
+// Three equal columns
+Columns({
+  columns: ["Column 1", "Column 2", "Column 3"],
+  gap: 4,
+})
+
+// Fixed and flexible widths
+Columns({
+  columns: [
+    { content: "Label:", width: 10, align: "right" },
+    { content: "Value here", width: "flex" },
+  ],
+})
+
+// Percentage widths
+Columns({
+  columns: [
+    { content: "Sidebar", width: "30%" },
+    { content: "Main content", width: "70%" },
+  ],
+})
+
+// Auto-width (fit content)
+Columns({
+  columns: [
+    { content: "ID", width: "auto" },
+    { content: "Description", width: "flex" },
+    { content: "Status", width: "auto" },
+  ],
+})
+
+// Styled columns
+Columns({
+  columns: [
+    { content: "Name", style: "bold" },
+    { content: "Active", style: "success", align: "center" },
+  ],
+})
+
+// Key-value shorthand
+KeyValue("Name:", "John Doe")
+KeyValue("Status:", "Active", 15)  // with label width
+```
+
+**Width Options:**
+- `number` - Fixed width in characters
+- `"auto"` - Fit content
+- `"flex"` - Take remaining space equally
+- `"30%"` - Percentage of available width
+
+**Options:**
+- `columns`: Array of column definitions or strings
+- `gap`: Space between columns (default: 2)
+- `align`: Horizontal alignment of entire row
+- `defaultWidth`: Default column width (default: `"flex"`)
+- `minWidth`: Minimum column width (default: 1)
+
 ---
 
 ## Dialogs
@@ -910,8 +1027,8 @@ invalidateFrameDimensionsCache();
 export { Component, type ComponentConfig } from "./component";
 
 // Widgets
-export { Text, Spacer, Row, Table, ProgressBar, Progress, List, BulletList, NumberedList, CheckboxList } from "./widgets";
-export type { Widget, RenderContext, TableCell, TableColumn, ProgressBarOptions, ProgressBarStyle, ListItem, ListOptions, ListStyle } from "./widgets";
+export { Text, Spacer, Row, Table, ProgressBar, Progress, List, BulletList, NumberedList, CheckboxList, Divider, HR, Columns, KeyValue } from "./widgets";
+export type { Widget, RenderContext, TableCell, TableColumn, ProgressBarOptions, ProgressBarStyle, ListItem, ListOptions, ListStyle, DividerOptions, DividerStyle, ColumnDef, ColumnWidth, ColumnsOptions } from "./widgets";
 
 // Dialogs
 export { selectMenu, textInput, passwordInput, confirm, confirmYesNo } from "./dialogs";
