@@ -294,6 +294,75 @@ Progress(0.75, "line")  // 75% with line style
 - `emptyColor`: Custom color for empty portion
 - `chars`: Custom character set
 
+### List
+
+Display lists with various marker styles.
+
+```typescript
+import { List, BulletList, NumberedList, CheckboxList } from "quarktui";
+
+// Simple bullet list from array
+List(["Item 1", "Item 2", "Item 3"])
+
+// Numbered list
+List({
+  items: ["First", "Second", "Third"],
+  style: "numbered",
+})
+
+// Checkbox list with checked items
+List({
+  items: [
+    { text: "Complete task", checked: true },
+    { text: "Pending task", checked: false },
+    { text: "Another task" },
+  ],
+  style: "checkbox",
+})
+
+// Styled items with different colors
+List({
+  items: [
+    { text: "Success!", style: "success" },
+    { text: "Warning!", style: "warning" },
+    { text: "Error!", style: "error" },
+  ],
+  style: "arrow",
+})
+
+// Scrollable list with selection highlighting
+List({
+  items: longArray,
+  selectedIndex: 2,
+  maxVisible: 5,
+  scrollOffset: 0,
+})
+
+// Shorthand functions
+BulletList(["Apple", "Banana", "Cherry"])
+NumberedList(["First", "Second", "Third"])
+CheckboxList([
+  { text: "Done", checked: true },
+  { text: "Pending" },
+])
+```
+
+**Styles:** `"bullet"` (•), `"numbered"` (1.), `"dash"` (-), `"arrow"` (›), `"check"` (✓), `"checkbox"` (☐/☑), `"none"`
+
+**Options:**
+- `items`: Array of strings or `{ text, style?, checked?, marker? }` objects
+- `style`: Marker style (default: `"bullet"`)
+- `align`: Horizontal alignment
+- `indent`: Spaces before marker (default: 0)
+- `gap`: Space between marker and text (default: 1)
+- `selectedIndex`: Index of highlighted item
+- `selectedMarker`: Marker for selected item (default: `"❯"`)
+- `selectedStyle`: Style for selected item text
+- `maxVisible`: Max items shown (enables scrolling)
+- `scrollOffset`: Current scroll position
+- `showScrollIndicators`: Show ↑/↓ when clipped (default: true)
+- `startNumber`: Starting number for numbered lists (default: 1)
+
 ---
 
 ## Dialogs
@@ -841,8 +910,8 @@ invalidateFrameDimensionsCache();
 export { Component, type ComponentConfig } from "./component";
 
 // Widgets
-export { Text, Spacer, Row, Table, ProgressBar, Progress } from "./widgets";
-export type { Widget, RenderContext, TableCell, TableColumn, ProgressBarOptions, ProgressBarStyle } from "./widgets";
+export { Text, Spacer, Row, Table, ProgressBar, Progress, List, BulletList, NumberedList, CheckboxList } from "./widgets";
+export type { Widget, RenderContext, TableCell, TableColumn, ProgressBarOptions, ProgressBarStyle, ListItem, ListOptions, ListStyle } from "./widgets";
 
 // Dialogs
 export { selectMenu, textInput, passwordInput, confirm, confirmYesNo } from "./dialogs";

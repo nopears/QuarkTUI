@@ -67,6 +67,9 @@ export {
   type TableOptions,
   type ProgressBarOptions,
   type ProgressBarStyle,
+  type ListItem,
+  type ListOptions,
+  type ListStyle,
   // Primitives
   Text,
   Spacer,
@@ -74,6 +77,10 @@ export {
   Table,
   ProgressBar,
   Progress,
+  List,
+  BulletList,
+  NumberedList,
+  CheckboxList,
 } from "./widgets";
 
 // Renderer
