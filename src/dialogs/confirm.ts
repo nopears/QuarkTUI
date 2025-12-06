@@ -4,7 +4,13 @@
  * A simple Yes/No confirmation dialog with keyboard navigation.
  */
 
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import {
+  clearScreen,
+  hideCursor,
+  showCursor,
+  beginRender,
+  flushRender,
+} from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import {
   waitForKeypressCancellable,
@@ -60,6 +66,9 @@ function renderConfirm(config: ConfirmConfig, selectedConfirm: boolean): void {
   const messageLineCount = config.message ? 2 : 0; // message + empty
   const availableContentLines =
     height - headerLineCount - footerLineCount - messageLineCount - 2;
+
+  // Begin buffered rendering for flicker-free output
+  beginRender();
 
   clearScreen();
   hideCursor();
@@ -133,6 +142,9 @@ function renderConfirm(config: ConfirmConfig, selectedConfirm: boolean): void {
   }
 
   drawBottomBorder(innerWidth);
+
+  // Flush all buffered output at once
+  flushRender();
 }
 
 // =============================================================================

@@ -4,7 +4,7 @@
  * A customizable loading spinner with message support.
  * Can be updated while running and stopped with a final message.
  */
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import { clearScreen, hideCursor, showCursor, beginRender, flushRender, } from "../core/terminal";
 import { getCurrentTheme, RESET } from "../core/theme";
 import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
 import { drawSimpleHeader, drawSimpleFooter } from "./shared";
@@ -68,6 +68,8 @@ function renderSpinner(config, frame, message) {
     const footerLineCount = 4; // divider + empty + hint + empty
     const spinnerLineCount = 1;
     const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for top/bottom borders
+    // Begin buffered rendering for flicker-free output
+    beginRender();
     clearScreen();
     hideCursor();
     // Vertical padding
@@ -97,6 +99,8 @@ function renderSpinner(config, frame, message) {
     drawDivider(innerWidth);
     drawSimpleFooter(innerWidth, ["Please wait..."]);
     drawBottomBorder(innerWidth);
+    // Flush all buffered output at once
+    flushRender();
 }
 function renderFinalMessage(config, finalMessage) {
     const { width, height } = getFrameDimensions();
@@ -108,6 +112,8 @@ function renderFinalMessage(config, finalMessage) {
     const footerLineCount = 4; // divider + empty + hint + empty
     const messageLineCount = 1;
     const availableContentLines = height - headerLineCount - footerLineCount - 2;
+    // Begin buffered rendering for flicker-free output
+    beginRender();
     clearScreen();
     hideCursor();
     // Vertical padding
@@ -139,6 +145,8 @@ function renderFinalMessage(config, finalMessage) {
     drawEmptyLine(innerWidth);
     drawEmptyLine(innerWidth);
     drawBottomBorder(innerWidth);
+    // Flush all buffered output at once
+    flushRender();
 }
 // =============================================================================
 // Main Function

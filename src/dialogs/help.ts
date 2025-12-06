@@ -5,7 +5,13 @@
  * Applications provide help content, and QuarkTUI handles the display.
  */
 
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import {
+  clearScreen,
+  hideCursor,
+  showCursor,
+  beginRender,
+  flushRender,
+} from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import {
   waitForKeypressCancellable,
@@ -133,6 +139,9 @@ function renderHelp(
   const footerLineCount = 4; // divider + empty + hint + empty
   const availableContentLines = height - headerLineCount - footerLineCount - 2;
 
+  // Begin buffered rendering for flicker-free output
+  beginRender();
+
   clearScreen();
   hideCursor();
 
@@ -198,6 +207,9 @@ function renderHelp(
   drawSimpleFooter(innerWidth, ["Press any key to close"]);
 
   drawBottomBorder(innerWidth);
+
+  // Flush all buffered output at once
+  flushRender();
 }
 
 // =============================================================================

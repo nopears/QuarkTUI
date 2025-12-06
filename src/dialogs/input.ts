@@ -5,7 +5,13 @@
  * and customizable styling.
  */
 
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import {
+  clearScreen,
+  hideCursor,
+  showCursor,
+  beginRender,
+  flushRender,
+} from "../core/terminal";
 import { getCurrentTheme, RESET, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isPrintable } from "../core/keyboard";
 import {
@@ -68,6 +74,9 @@ function renderTextInput(
     infoLineCount -
     errorLineCount -
     2;
+
+  // Begin buffered rendering for flicker-free output
+  beginRender();
 
   clearScreen();
   hideCursor();
@@ -157,6 +166,9 @@ function renderTextInput(
   }
 
   drawBottomBorder(innerWidth);
+
+  // Flush all buffered output at once
+  flushRender();
 }
 
 // =============================================================================

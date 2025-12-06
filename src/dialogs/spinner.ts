@@ -5,7 +5,13 @@
  * Can be updated while running and stopped with a final message.
  */
 
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import {
+  clearScreen,
+  hideCursor,
+  showCursor,
+  beginRender,
+  flushRender,
+} from "../core/terminal";
 import { getCurrentTheme, RESET, DIM } from "../core/theme";
 import {
   drawTopBorder,
@@ -112,6 +118,9 @@ function renderSpinner(
   const spinnerLineCount = 1;
   const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for top/bottom borders
 
+  // Begin buffered rendering for flicker-free output
+  beginRender();
+
   clearScreen();
   hideCursor();
 
@@ -150,6 +159,9 @@ function renderSpinner(
   drawDivider(innerWidth);
   drawSimpleFooter(innerWidth, ["Please wait..."]);
   drawBottomBorder(innerWidth);
+
+  // Flush all buffered output at once
+  flushRender();
 }
 
 function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
@@ -163,6 +175,9 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
   const footerLineCount = 4; // divider + empty + hint + empty
   const messageLineCount = 1;
   const availableContentLines = height - headerLineCount - footerLineCount - 2;
+
+  // Begin buffered rendering for flicker-free output
+  beginRender();
 
   clearScreen();
   hideCursor();
@@ -204,6 +219,9 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
   drawEmptyLine(innerWidth);
   drawEmptyLine(innerWidth);
   drawBottomBorder(innerWidth);
+
+  // Flush all buffered output at once
+  flushRender();
 }
 
 // =============================================================================

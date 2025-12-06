@@ -4,8 +4,7 @@
  * Box drawing characters and layout utilities for building
  * framed UI components in the terminal.
  */
-import process from "node:process";
-import { getTerminalSize } from "./terminal";
+import { getTerminalSize, bufferWrite, bufferWriteLine, } from "./terminal";
 import { getCurrentTheme, RESET } from "./theme";
 import { visibleLength, repeat } from "./style";
 // =============================================================================
@@ -241,7 +240,7 @@ function getBorderColor() {
  */
 export function drawHorizontalPadding() {
     const padding = currentHorizontalPadding ?? layoutConfig.paddingX;
-    process.stdout.write(repeat(" ", padding));
+    bufferWrite(repeat(" ", padding));
 }
 /**
  * Draw the top border of a frame.
@@ -252,7 +251,7 @@ export function drawHorizontalPadding() {
 export function drawTopBorder(innerWidth, box = BOX) {
     const color = getBorderColor();
     drawHorizontalPadding();
-    console.log(`${color}${box.topLeft}${repeat(box.horizontal, innerWidth)}${box.topRight}${RESET}`);
+    bufferWriteLine(`${color}${box.topLeft}${repeat(box.horizontal, innerWidth)}${box.topRight}${RESET}`);
 }
 /**
  * Draw the bottom border of a frame.
@@ -263,7 +262,7 @@ export function drawTopBorder(innerWidth, box = BOX) {
 export function drawBottomBorder(innerWidth, box = BOX) {
     const color = getBorderColor();
     drawHorizontalPadding();
-    console.log(`${color}${box.bottomLeft}${repeat(box.horizontal, innerWidth)}${box.bottomRight}${RESET}`);
+    bufferWriteLine(`${color}${box.bottomLeft}${repeat(box.horizontal, innerWidth)}${box.bottomRight}${RESET}`);
 }
 /**
  * Draw a horizontal divider within a frame.
@@ -274,7 +273,7 @@ export function drawBottomBorder(innerWidth, box = BOX) {
 export function drawDivider(innerWidth, box = BOX) {
     const color = getBorderColor();
     drawHorizontalPadding();
-    console.log(`${color}${box.teeLeft}${repeat(box.horizontal, innerWidth)}${box.teeRight}${RESET}`);
+    bufferWriteLine(`${color}${box.teeLeft}${repeat(box.horizontal, innerWidth)}${box.teeRight}${RESET}`);
 }
 /**
  * Draw an empty line within a frame (just borders with spaces).
@@ -285,7 +284,7 @@ export function drawDivider(innerWidth, box = BOX) {
 export function drawEmptyLine(innerWidth, box = BOX) {
     const color = getBorderColor();
     drawHorizontalPadding();
-    console.log(`${color}${box.vertical}${RESET}${repeat(" ", innerWidth)}${color}${box.vertical}${RESET}`);
+    bufferWriteLine(`${color}${box.vertical}${RESET}${repeat(" ", innerWidth)}${color}${box.vertical}${RESET}`);
 }
 /**
  * Draw a line of content within a frame.
@@ -300,7 +299,7 @@ export function drawLine(content, innerWidth, box = BOX) {
     const contentLen = visibleLength(content);
     const padding = Math.max(0, innerWidth - contentLen);
     drawHorizontalPadding();
-    console.log(`${color}${box.vertical}${RESET}${content}${repeat(" ", padding)}${color}${box.vertical}${RESET}`);
+    bufferWriteLine(`${color}${box.vertical}${RESET}${content}${repeat(" ", padding)}${color}${box.vertical}${RESET}`);
 }
 /**
  * Draw a centered line of content within a frame.
@@ -316,7 +315,7 @@ export function drawCenteredLine(content, innerWidth, box = BOX) {
     const leftPadding = Math.floor(totalPadding / 2);
     const rightPadding = totalPadding - leftPadding;
     drawHorizontalPadding();
-    console.log(`${color}${box.vertical}${RESET}${repeat(" ", leftPadding)}${content}${repeat(" ", rightPadding)}${color}${box.vertical}${RESET}`);
+    bufferWriteLine(`${color}${box.vertical}${RESET}${repeat(" ", leftPadding)}${content}${repeat(" ", rightPadding)}${color}${box.vertical}${RESET}`);
 }
 /**
  * Draw a right-aligned line of content within a frame.
@@ -330,7 +329,7 @@ export function drawRightAlignedLine(content, innerWidth, box = BOX) {
     const contentLen = visibleLength(content);
     const padding = Math.max(0, innerWidth - contentLen);
     drawHorizontalPadding();
-    console.log(`${color}${box.vertical}${RESET}${repeat(" ", padding)}${content}${color}${box.vertical}${RESET}`);
+    bufferWriteLine(`${color}${box.vertical}${RESET}${repeat(" ", padding)}${content}${color}${box.vertical}${RESET}`);
 }
 // =============================================================================
 // Vertical Padding
@@ -343,7 +342,7 @@ export function drawRightAlignedLine(content, innerWidth, box = BOX) {
 export function drawVerticalPadding(count) {
     const lines = count ?? layoutConfig.paddingY;
     for (let i = 0; i < lines; i++) {
-        console.log();
+        bufferWriteLine();
     }
 }
 // =============================================================================

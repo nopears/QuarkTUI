@@ -625,6 +625,45 @@ write("Hello at position (10, 5)");
 showCursor();
 ```
 
+### Render Buffering
+
+For flicker-free rendering, QuarkTUI provides a render buffer system that batches all terminal writes into a single operation:
+
+```typescript
+import {
+  beginRender,
+  flushRender,
+  cancelRender,
+  isRenderBuffering,
+  clearScreen,
+  drawTopBorder,
+  drawLine,
+  drawBottomBorder,
+} from "quarktui";
+
+// Start buffered rendering
+beginRender();
+
+// All draw operations are collected in memory
+clearScreen();
+drawTopBorder(60);
+drawLine("Hello World", 60);
+drawBottomBorder(60);
+
+// Flush everything to terminal in one write (reduces flicker)
+flushRender();
+
+// Check if buffering is active
+if (isRenderBuffering()) {
+  // Currently in buffered mode
+}
+
+// Cancel without flushing (discards buffer)
+cancelRender();
+```
+
+**Note:** All built-in dialogs (`selectMenu`, `confirm`, `textInput`, etc.) automatically use buffered rendering for smooth updates.
+
 ### Box Drawing
 
 ```typescript
@@ -777,6 +816,7 @@ export type { KeypressEvent, KeyboardHandler } from "./core";
 // Terminal
 export { clearScreen, clearToEnd, clearLine, hideCursor, showCursor } from "./core";
 export { moveCursor, getTerminalSize, write, writeLine } from "./core";
+export { beginRender, flushRender, cancelRender, isRenderBuffering } from "./core";
 export type { TerminalSize } from "./core";
 
 // Drawing

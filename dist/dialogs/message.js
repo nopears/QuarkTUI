@@ -5,7 +5,7 @@
  * Supports different message types (info, success, warning, error)
  * with appropriate icons and colors.
  */
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import { clearScreen, hideCursor, showCursor, beginRender, flushRender, } from "../core/terminal";
 import { getCurrentTheme, RESET, DIM } from "../core/theme";
 import { waitForKeypress } from "../core/keyboard";
 import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
@@ -32,6 +32,8 @@ function renderMessage(config) {
     const footerLineCount = 4; // divider + empty + hint/empty + empty
     const contentLineCount = config.lines.length;
     const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for borders
+    // Begin buffered rendering for flicker-free output
+    beginRender();
     clearScreen();
     hideCursor();
     // Vertical padding
@@ -81,6 +83,8 @@ function renderMessage(config) {
         drawEmptyLine(innerWidth);
     }
     drawBottomBorder(innerWidth);
+    // Flush all buffered output at once
+    flushRender();
 }
 // =============================================================================
 // Main Functions

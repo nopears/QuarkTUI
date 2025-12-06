@@ -12,6 +12,8 @@ import {
   clearScreen,
   hideCursor,
   showCursor,
+  beginRender,
+  flushRender,
   drawTopBorder,
   drawBottomBorder,
   drawDivider,
@@ -171,6 +173,9 @@ function renderWindow(config: WindowConfig, ctx: RenderContext): void {
 
   const { y: paddingY } = getPadding();
 
+  // Begin buffered rendering for flicker-free output
+  beginRender();
+
   clearScreen();
   hideCursor();
 
@@ -220,6 +225,9 @@ function renderWindow(config: WindowConfig, ctx: RenderContext): void {
   drawDivider(innerWidth);
   drawWindowFooter(innerWidth, config.hints);
   drawBottomBorder(innerWidth);
+
+  // Flush all buffered output at once
+  flushRender();
 }
 
 // =============================================================================

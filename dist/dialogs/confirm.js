@@ -3,7 +3,7 @@
  *
  * A simple Yes/No confirmation dialog with keyboard navigation.
  */
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import { clearScreen, hideCursor, showCursor, beginRender, flushRender, } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isLeftKey, isRightKey, isConfirmKey, isBackKey, } from "../core/keyboard";
 import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
@@ -23,6 +23,8 @@ function renderConfirm(config, selectedConfirm) {
     const footerLineCount = 4; // divider + empty + hints + empty
     const messageLineCount = config.message ? 2 : 0; // message + empty
     const availableContentLines = height - headerLineCount - footerLineCount - messageLineCount - 2;
+    // Begin buffered rendering for flicker-free output
+    beginRender();
     clearScreen();
     hideCursor();
     // Vertical padding
@@ -83,6 +85,8 @@ function renderConfirm(config, selectedConfirm) {
         });
     }
     drawBottomBorder(innerWidth);
+    // Flush all buffered output at once
+    flushRender();
 }
 // =============================================================================
 // Main Function

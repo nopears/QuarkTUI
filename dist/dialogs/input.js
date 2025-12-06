@@ -4,7 +4,7 @@
  * A text input dialog with validation support, placeholder text,
  * and customizable styling.
  */
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import { clearScreen, hideCursor, showCursor, beginRender, flushRender, } from "../core/terminal";
 import { getCurrentTheme, RESET, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isPrintable } from "../core/keyboard";
 import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
@@ -28,6 +28,8 @@ function renderTextInput(config, value, errorMessage) {
         infoLineCount -
         errorLineCount -
         2;
+    // Begin buffered rendering for flicker-free output
+    beginRender();
     clearScreen();
     hideCursor();
     // Vertical padding
@@ -101,6 +103,8 @@ function renderTextInput(config, value, errorMessage) {
         });
     }
     drawBottomBorder(innerWidth);
+    // Flush all buffered output at once
+    flushRender();
 }
 // =============================================================================
 // Main Function

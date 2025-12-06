@@ -8,6 +8,8 @@
 // Terminal Operations
 // =============================================================================
 export { 
+// Render buffering
+beginRender, flushRender, cancelRender, isRenderBuffering, bufferWrite, bufferWriteLine, 
 // Screen control
 clearScreen, clearToEnd, clearLine, 
 // Cursor control

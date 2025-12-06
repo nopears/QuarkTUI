@@ -4,7 +4,7 @@
  * A configurable list selection dialog with keyboard navigation.
  * Supports hints, info lines, and customizable styling.
  */
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import { clearScreen, hideCursor, showCursor, beginRender, flushRender, } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isUpKey, isDownKey, isConfirmKey, isBackKey, getNumberKey, } from "../core/keyboard";
 import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
@@ -26,6 +26,8 @@ function renderSelectMenu(config, selectedIndex) {
     const infoLineCount = config.infoLines ? config.infoLines.length + 1 : 0; // +1 for spacing
     const availableContentLines = height - headerLineCount - footerLineCount - infoLineCount - 2; // -2 for borders
     const optionCount = config.options.length;
+    // Begin buffered rendering for flicker-free output
+    beginRender();
     clearScreen();
     hideCursor();
     // Vertical padding
@@ -129,6 +131,8 @@ function renderSelectMenu(config, selectedIndex) {
         });
     }
     drawBottomBorder(innerWidth);
+    // Flush all buffered output at once
+    flushRender();
 }
 // =============================================================================
 // Main Function

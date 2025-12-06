@@ -6,7 +6,13 @@
  * with appropriate icons and colors.
  */
 
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import {
+  clearScreen,
+  hideCursor,
+  showCursor,
+  beginRender,
+  flushRender,
+} from "../core/terminal";
 import { getCurrentTheme, RESET, DIM } from "../core/theme";
 import { waitForKeypress } from "../core/keyboard";
 import {
@@ -78,6 +84,9 @@ function renderMessage(config: MessageConfig): void {
   const contentLineCount = config.lines.length;
   const availableContentLines = height - headerLineCount - footerLineCount - 2; // -2 for borders
 
+  // Begin buffered rendering for flicker-free output
+  beginRender();
+
   clearScreen();
   hideCursor();
 
@@ -136,6 +145,9 @@ function renderMessage(config: MessageConfig): void {
   }
 
   drawBottomBorder(innerWidth);
+
+  // Flush all buffered output at once
+  flushRender();
 }
 
 // =============================================================================

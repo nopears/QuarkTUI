@@ -4,7 +4,7 @@
  * Manages the full lifecycle of a UI screen: rendering, keyboard handling, and cleanup.
  * Provides a consistent pattern for all interactive screens in the application.
  */
-import { style, getFrameDimensions, getPadding, clearScreen, hideCursor, showCursor, drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, createKeyboardHandler, isBackKey, isHelpKey, showHelp, } from "./index";
+import { style, getFrameDimensions, getPadding, clearScreen, hideCursor, showCursor, beginRender, flushRender, drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, createKeyboardHandler, isBackKey, isHelpKey, showHelp, } from "./index";
 // =============================================================================
 // Layout Constants
 // =============================================================================
@@ -72,6 +72,8 @@ function calculateContentHeight(frameHeight) {
 function renderWindow(config, ctx) {
     const { innerWidth, contentHeight } = ctx;
     const { y: paddingY } = getPadding();
+    // Begin buffered rendering for flicker-free output
+    beginRender();
     clearScreen();
     hideCursor();
     // Vertical padding
@@ -109,6 +111,8 @@ function renderWindow(config, ctx) {
     drawDivider(innerWidth);
     drawWindowFooter(innerWidth, config.hints);
     drawBottomBorder(innerWidth);
+    // Flush all buffered output at once
+    flushRender();
 }
 // =============================================================================
 // Window Factory

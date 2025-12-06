@@ -2,9 +2,88 @@
  * QuarkTUI - Terminal Core
  *
  * Low-level terminal operations including cursor control,
- * screen clearing, and terminal size detection.
+ * screen clearing, terminal size detection, and render buffering.
  */
 import process from "node:process";
+// =============================================================================
+// Render Buffer
+// =============================================================================
+/** Internal buffer for batched writes */
+let renderBuffer = [];
+/** Whether buffering is currently active */
+let isBuffering = false;
+/**
+ * Check if render buffering is currently active.
+ */
+export function isRenderBuffering() {
+    return isBuffering;
+}
+/**
+ * Begin buffered rendering.
+ * All subsequent write operations will be collected in a buffer
+ * until `flushRender()` is called.
+ *
+ * @example
+ * ```ts
+ * beginRender();
+ * drawTopBorder(width);
+ * drawLine("Hello", width);
+ * drawBottomBorder(width);
+ * flushRender(); // Single write to terminal
+ * ```
+ */
+export function beginRender() {
+    isBuffering = true;
+    renderBuffer = [];
+}
+/**
+ * Flush the render buffer to the terminal.
+ * Writes all buffered content in a single operation to reduce flicker.
+ * Automatically ends buffering mode.
+ */
+export function flushRender() {
+    if (renderBuffer.length > 0) {
+        process.stdout.write(renderBuffer.join(""));
+    }
+    renderBuffer = [];
+    isBuffering = false;
+}
+/**
+ * Cancel buffered rendering without flushing.
+ * Discards all buffered content.
+ */
+export function cancelRender() {
+    renderBuffer = [];
+    isBuffering = false;
+}
+/**
+ * Write to the render buffer or directly to stdout.
+ * Used internally by drawing functions.
+ *
+ * @param text - Text to write (without newline)
+ */
+export function bufferWrite(text) {
+    if (isBuffering) {
+        renderBuffer.push(text);
+    }
+    else {
+        process.stdout.write(text);
+    }
+}
+/**
+ * Write a line to the render buffer or directly to stdout.
+ * Used internally by drawing functions.
+ *
+ * @param text - Text to write (newline will be added)
+ */
+export function bufferWriteLine(text = "") {
+    if (isBuffering) {
+        renderBuffer.push(text + "\n");
+    }
+    else {
+        console.log(text);
+    }
+}
 // =============================================================================
 // Screen Control
 // =============================================================================
@@ -12,19 +91,19 @@ import process from "node:process";
  * Clear the entire screen and move cursor to home position.
  */
 export function clearScreen() {
-    process.stdout.write("\x1b[2J\x1b[H");
+    bufferWrite("\x1b[2J\x1b[H");
 }
 /**
  * Clear from cursor to end of screen.
  */
 export function clearToEnd() {
-    process.stdout.write("\x1b[J");
+    bufferWrite("\x1b[J");
 }
 /**
  * Clear the current line.
  */
 export function clearLine() {
-    process.stdout.write("\x1b[2K");
+    bufferWrite("\x1b[2K");
 }
 // =============================================================================
 // Cursor Control
@@ -33,13 +112,13 @@ export function clearLine() {
  * Hide the cursor.
  */
 export function hideCursor() {
-    process.stdout.write("\x1b[?25l");
+    bufferWrite("\x1b[?25l");
 }
 /**
  * Show the cursor.
  */
 export function showCursor() {
-    process.stdout.write("\x1b[?25h");
+    bufferWrite("\x1b[?25h");
 }
 /**
  * Move cursor to a specific position.
@@ -47,43 +126,43 @@ export function showCursor() {
  * @param col - 1-based column number
  */
 export function moveCursor(row, col) {
-    process.stdout.write(`\x1b[${row};${col}H`);
+    bufferWrite(`\x1b[${row};${col}H`);
 }
 /**
  * Move cursor up by n rows.
  */
 export function moveCursorUp(n = 1) {
-    process.stdout.write(`\x1b[${n}A`);
+    bufferWrite(`\x1b[${n}A`);
 }
 /**
  * Move cursor down by n rows.
  */
 export function moveCursorDown(n = 1) {
-    process.stdout.write(`\x1b[${n}B`);
+    bufferWrite(`\x1b[${n}B`);
 }
 /**
  * Move cursor right by n columns.
  */
 export function moveCursorRight(n = 1) {
-    process.stdout.write(`\x1b[${n}C`);
+    bufferWrite(`\x1b[${n}C`);
 }
 /**
  * Move cursor left by n columns.
  */
 export function moveCursorLeft(n = 1) {
-    process.stdout.write(`\x1b[${n}D`);
+    bufferWrite(`\x1b[${n}D`);
 }
 /**
  * Save current cursor position.
  */
 export function saveCursorPosition() {
-    process.stdout.write("\x1b[s");
+    bufferWrite("\x1b[s");
 }
 /**
  * Restore previously saved cursor position.
  */
 export function restoreCursorPosition() {
-    process.stdout.write("\x1b[u");
+    bufferWrite("\x1b[u");
 }
 /** Default terminal width if detection fails */
 export const DEFAULT_WIDTH = 80;
@@ -116,21 +195,23 @@ export function isInputTTY() {
 // =============================================================================
 /**
  * Write text to stdout without a newline.
+ * Respects render buffering if active.
  */
 export function write(text) {
-    process.stdout.write(text);
+    bufferWrite(text);
 }
 /**
  * Write text to stdout with a newline.
+ * Respects render buffering if active.
  */
 export function writeLine(text = "") {
-    console.log(text);
+    bufferWriteLine(text);
 }
 /**
  * Ring the terminal bell.
  */
 export function bell() {
-    process.stdout.write("\x07");
+    bufferWrite("\x07");
 }
 // =============================================================================
 // Alternate Screen Buffer
@@ -140,13 +221,13 @@ export function bell() {
  * This preserves the main screen content.
  */
 export function enterAlternateScreen() {
-    process.stdout.write("\x1b[?1049h");
+    bufferWrite("\x1b[?1049h");
 }
 /**
  * Leave the alternate screen buffer.
  * This restores the main screen content.
  */
 export function leaveAlternateScreen() {
-    process.stdout.write("\x1b[?1049l");
+    bufferWrite("\x1b[?1049l");
 }
 //# sourceMappingURL=terminal.js.map

@@ -5,7 +5,13 @@
  * Supports hints, info lines, and customizable styling.
  */
 
-import { clearScreen, hideCursor, showCursor } from "../core/terminal";
+import {
+  clearScreen,
+  hideCursor,
+  showCursor,
+  beginRender,
+  flushRender,
+} from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import {
   waitForKeypressCancellable,
@@ -81,6 +87,9 @@ function renderSelectMenu<T>(
   const availableContentLines =
     height - headerLineCount - footerLineCount - infoLineCount - 2; // -2 for borders
   const optionCount = config.options.length;
+
+  // Begin buffered rendering for flicker-free output
+  beginRender();
 
   clearScreen();
   hideCursor();
@@ -206,6 +215,9 @@ function renderSelectMenu<T>(
   }
 
   drawBottomBorder(innerWidth);
+
+  // Flush all buffered output at once
+  flushRender();
 }
 
 // =============================================================================

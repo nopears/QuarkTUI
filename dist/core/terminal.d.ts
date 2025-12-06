@@ -2,8 +2,52 @@
  * QuarkTUI - Terminal Core
  *
  * Low-level terminal operations including cursor control,
- * screen clearing, and terminal size detection.
+ * screen clearing, terminal size detection, and render buffering.
  */
+/**
+ * Check if render buffering is currently active.
+ */
+export declare function isRenderBuffering(): boolean;
+/**
+ * Begin buffered rendering.
+ * All subsequent write operations will be collected in a buffer
+ * until `flushRender()` is called.
+ *
+ * @example
+ * ```ts
+ * beginRender();
+ * drawTopBorder(width);
+ * drawLine("Hello", width);
+ * drawBottomBorder(width);
+ * flushRender(); // Single write to terminal
+ * ```
+ */
+export declare function beginRender(): void;
+/**
+ * Flush the render buffer to the terminal.
+ * Writes all buffered content in a single operation to reduce flicker.
+ * Automatically ends buffering mode.
+ */
+export declare function flushRender(): void;
+/**
+ * Cancel buffered rendering without flushing.
+ * Discards all buffered content.
+ */
+export declare function cancelRender(): void;
+/**
+ * Write to the render buffer or directly to stdout.
+ * Used internally by drawing functions.
+ *
+ * @param text - Text to write (without newline)
+ */
+export declare function bufferWrite(text: string): void;
+/**
+ * Write a line to the render buffer or directly to stdout.
+ * Used internally by drawing functions.
+ *
+ * @param text - Text to write (newline will be added)
+ */
+export declare function bufferWriteLine(text?: string): void;
 /**
  * Clear the entire screen and move cursor to home position.
  */
@@ -82,10 +126,12 @@ export declare function isTTY(): boolean;
 export declare function isInputTTY(): boolean;
 /**
  * Write text to stdout without a newline.
+ * Respects render buffering if active.
  */
 export declare function write(text: string): void;
 /**
  * Write text to stdout with a newline.
+ * Respects render buffering if active.
  */
 export declare function writeLine(text?: string): void;
 /**
