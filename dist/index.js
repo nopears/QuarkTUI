@@ -51,7 +51,7 @@ export { Component } from "./component";
 // =============================================================================
 export { 
 // Primitives
-Text, Spacer, Row, Table, } from "./widgets";
+Text, Spacer, Row, Table, ProgressBar, Progress, } from "./widgets";
 // Renderer
 export { render, renderFitted } from "./renderer";
 // =============================================================================

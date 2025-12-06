@@ -236,6 +236,64 @@ const rows: TableCell[][] = [
 Table({ columns, rows, align: "center" })
 ```
 
+### ProgressBar
+
+Display a visual progress indicator.
+
+```typescript
+import { ProgressBar, Progress } from "quarktui";
+
+// Simple progress bar (50%)
+ProgressBar({ value: 0.5 })
+
+// With value display (50/100)
+ProgressBar({ value: 50, max: 100, showValue: true })
+
+// Different styles: "block" | "line" | "ascii" | "dots" | "gradient"
+ProgressBar({ value: 0.75, style: "line" })
+
+// Label on left with ASCII style
+ProgressBar({
+  value: 3,
+  max: 10,
+  style: "ascii",
+  labelPosition: "left",
+  showValue: true,
+})
+
+// Custom width and centered
+ProgressBar({
+  value: 0.33,
+  width: 40,
+  align: "center",
+  label: "Loading...",
+})
+
+// Custom characters
+ProgressBar({
+  value: 0.6,
+  chars: { filled: "▓", empty: "░", left: "[", right: "]" },
+})
+
+// Shorthand for simple progress
+Progress(0.5)           // 50% with block style
+Progress(0.75, "line")  // 75% with line style
+```
+
+**Options:**
+- `value`: Progress value (0 to 1, or 0 to max)
+- `max`: Maximum value (default: 1)
+- `width`: Bar width in characters (default: auto-fill)
+- `style`: Visual style - `"block"`, `"line"`, `"ascii"`, `"dots"`, `"gradient"`
+- `showPercentage`: Show percentage label (default: true)
+- `showValue`: Show value label (e.g., "50/100")
+- `label`: Custom label text
+- `labelPosition`: `"left"`, `"right"`, `"inside"`, `"none"`
+- `align`: Horizontal alignment
+- `filledColor`: Custom color for filled portion
+- `emptyColor`: Custom color for empty portion
+- `chars`: Custom character set
+
 ---
 
 ## Dialogs
@@ -783,8 +841,8 @@ invalidateFrameDimensionsCache();
 export { Component, type ComponentConfig } from "./component";
 
 // Widgets
-export { Text, Spacer, Row, Table } from "./widgets";
-export type { Widget, RenderContext, TableCell, TableColumn } from "./widgets";
+export { Text, Spacer, Row, Table, ProgressBar, Progress } from "./widgets";
+export type { Widget, RenderContext, TableCell, TableColumn, ProgressBarOptions, ProgressBarStyle } from "./widgets";
 
 // Dialogs
 export { selectMenu, textInput, passwordInput, confirm, confirmYesNo } from "./dialogs";

@@ -26,7 +26,7 @@ export interface RenderContext {
 // =============================================================================
 
 /** Supported widget types */
-export type WidgetType = "text" | "spacer" | "row" | "table";
+export type WidgetType = "text" | "spacer" | "row" | "table" | "progress";
 
 /**
  * Base interface for all widgets.

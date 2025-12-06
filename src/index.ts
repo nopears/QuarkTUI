@@ -65,11 +65,15 @@ export {
   type TableCell,
   type TableColumn,
   type TableOptions,
+  type ProgressBarOptions,
+  type ProgressBarStyle,
   // Primitives
   Text,
   Spacer,
   Row,
   Table,
+  ProgressBar,
+  Progress,
 } from "./widgets";
 
 // Renderer
