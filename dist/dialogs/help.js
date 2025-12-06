@@ -7,7 +7,8 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawDialogHeader, drawSimpleFooter } from "./shared";
 // =============================================================================
 // Key Detection
 // =============================================================================
@@ -71,12 +72,13 @@ function renderHelp(content, contentLines, scrollOffset) {
     drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
-    // Header (4 lines: empty + title + empty + empty) - matches select menu
-    drawEmptyLine(innerWidth);
-    const title = `${BOLD}${theme.colors.accent}? HELP${RESET}  ${DIM}${content.screenName}${RESET}`;
-    drawCenteredLine(title, innerWidth);
-    drawEmptyLine(innerWidth);
-    drawEmptyLine(innerWidth);
+    // Header
+    const icon = `${BOLD}${theme.colors.accent}?${RESET}`;
+    drawDialogHeader(innerWidth, {
+        title: "HELP",
+        icon,
+        description: content.screenName,
+    });
     drawDivider(innerWidth);
     // Content with scrolling
     const totalLines = contentLines.length;
@@ -109,9 +111,7 @@ function renderHelp(content, contentLines, scrollOffset) {
     }
     drawDivider(innerWidth);
     // Footer
-    drawEmptyLine(innerWidth);
-    drawLine(`  ${DIM}Press any key to close${RESET}`, innerWidth);
-    drawEmptyLine(innerWidth);
+    drawSimpleFooter(innerWidth, ["Press any key to close"]);
     drawBottomBorder(innerWidth);
 }
 // =============================================================================

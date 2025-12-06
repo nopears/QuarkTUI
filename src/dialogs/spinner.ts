@@ -6,7 +6,7 @@
  */
 
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
-import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
+import { getCurrentTheme, RESET, DIM } from "../core/theme";
 import {
   drawTopBorder,
   drawBottomBorder,
@@ -17,6 +17,7 @@ import {
   getFrameDimensions,
   getPadding,
 } from "../core/drawing";
+import { drawSimpleHeader, drawSimpleFooter } from "./shared";
 
 import type { SpinnerOptions, SpinnerController } from "../types/menu";
 
@@ -120,19 +121,9 @@ function renderSpinner(
   // Top border
   drawTopBorder(innerWidth);
 
-  // Header (4 lines: empty + title + empty + empty) - matches select menu
-  drawEmptyLine(innerWidth);
-  if (config.title) {
-    const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
-    drawCenteredLine(styledTitle, innerWidth);
-  } else {
-    drawCenteredLine(
-      `${BOLD}${theme.colors.accent}Loading${RESET}`,
-      innerWidth,
-    );
-  }
-  drawEmptyLine(innerWidth);
-  drawEmptyLine(innerWidth);
+  // Header
+  drawSimpleHeader(innerWidth, config.title || "Loading");
+
   drawDivider(innerWidth);
 
   // Calculate centering for spinner within available space
@@ -155,11 +146,9 @@ function renderSpinner(
     drawEmptyLine(innerWidth);
   }
 
-  // Footer (4 lines: divider + empty + hint + empty)
+  // Footer
   drawDivider(innerWidth);
-  drawEmptyLine(innerWidth);
-  drawCenteredLine(`${DIM}Please wait...${RESET}`, innerWidth);
-  drawEmptyLine(innerWidth);
+  drawSimpleFooter(innerWidth, ["Please wait..."]);
   drawBottomBorder(innerWidth);
 }
 
@@ -184,19 +173,9 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
   // Top border
   drawTopBorder(innerWidth);
 
-  // Header (4 lines: empty + title + empty + empty) - matches select menu
-  drawEmptyLine(innerWidth);
-  if (config.title) {
-    const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
-    drawCenteredLine(styledTitle, innerWidth);
-  } else {
-    drawCenteredLine(
-      `${BOLD}${theme.colors.accent}Complete${RESET}`,
-      innerWidth,
-    );
-  }
-  drawEmptyLine(innerWidth);
-  drawEmptyLine(innerWidth);
+  // Header
+  drawSimpleHeader(innerWidth, config.title || "Complete");
+
   drawDivider(innerWidth);
 
   // Calculate centering for message within available space
@@ -219,7 +198,7 @@ function renderFinalMessage(config: SpinnerConfig, finalMessage: string): void {
     drawEmptyLine(innerWidth);
   }
 
-  // Footer (4 lines: divider + empty + hint + empty)
+  // Footer
   drawDivider(innerWidth);
   drawEmptyLine(innerWidth);
   drawEmptyLine(innerWidth);

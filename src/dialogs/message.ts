@@ -7,7 +7,7 @@
  */
 
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
-import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
+import { getCurrentTheme, RESET, DIM } from "../core/theme";
 import { waitForKeypress } from "../core/keyboard";
 import {
   drawTopBorder,
@@ -21,6 +21,7 @@ import {
   getPadding,
   DEFAULT_INTERNAL_PADDING,
 } from "../core/drawing";
+import { drawIconHeader } from "./shared";
 import type { MessageType, MessageOptions } from "../types/menu";
 
 // =============================================================================
@@ -91,18 +92,7 @@ function renderMessage(config: MessageConfig): void {
     config.renderHeader(innerWidth);
   } else {
     const icon = `${color}${typeConfig.icon}${RESET}`;
-    const styledTitle = config.title
-      ? `${icon} ${BOLD}${config.title}${RESET}`
-      : icon;
-
-    // Line 1: Empty line
-    drawEmptyLine(innerWidth);
-    // Line 2: Title with icon
-    drawCenteredLine(styledTitle, innerWidth);
-    // Line 3: Empty line (matches select menu's description line)
-    drawEmptyLine(innerWidth);
-    // Line 4: Empty line
-    drawEmptyLine(innerWidth);
+    drawIconHeader(innerWidth, config.title || "", icon);
   }
 
   drawDivider(innerWidth);

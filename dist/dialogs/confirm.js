@@ -6,26 +6,10 @@
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
 import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isLeftKey, isRightKey, isConfirmKey, isBackKey, } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawIconHeader, drawDialogFooter } from "./shared";
 // =============================================================================
 // Header & Footer
-// =============================================================================
-function drawDefaultHeader(innerWidth, title) {
-    const theme = getCurrentTheme();
-    const styledTitle = `${BOLD}${theme.colors.warning}?${RESET} ${BOLD}${title}${RESET}`;
-    // Header (4 lines: empty + title + empty + empty) - matches select menu
-    drawEmptyLine(innerWidth);
-    drawCenteredLine(styledTitle, innerWidth);
-    drawEmptyLine(innerWidth);
-    drawEmptyLine(innerWidth);
-}
-function drawDefaultFooter(innerWidth) {
-    const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
-    const hints = `${DIM}←→${RESET} Switch  ${DIM}⏎${RESET} Confirm  ${DIM}y${RESET} Yes  ${DIM}n${RESET} No  ${DIM}⌫${RESET} Cancel`;
-    drawEmptyLine(innerWidth);
-    drawLine(`${pad}${hints}`, innerWidth);
-    drawEmptyLine(innerWidth);
-}
 // =============================================================================
 // Rendering
 // =============================================================================
@@ -50,7 +34,9 @@ function renderConfirm(config, selectedConfirm) {
         config.renderHeader(innerWidth);
     }
     else {
-        drawDefaultHeader(innerWidth, config.title);
+        const theme = getCurrentTheme();
+        const icon = `${BOLD}${theme.colors.warning}?${RESET}`;
+        drawIconHeader(innerWidth, config.title, icon);
     }
     drawDivider(innerWidth);
     // Message (if any)
@@ -92,7 +78,9 @@ function renderConfirm(config, selectedConfirm) {
         config.renderFooter(innerWidth);
     }
     else {
-        drawDefaultFooter(innerWidth);
+        drawDialogFooter(innerWidth, {
+            hints: ["←→ Switch", "⏎ Confirm", "y Yes", "n No", "⌫ Cancel"],
+        });
     }
     drawBottomBorder(innerWidth);
 }

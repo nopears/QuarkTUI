@@ -5,8 +5,9 @@
  * Can be updated while running and stopped with a final message.
  */
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
-import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
+import { getCurrentTheme, RESET } from "../core/theme";
 import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, } from "../core/drawing";
+import { drawSimpleHeader, drawSimpleFooter } from "./shared";
 // =============================================================================
 // Default Spinner Frames
 // =============================================================================
@@ -73,17 +74,8 @@ function renderSpinner(config, frame, message) {
     drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
-    // Header (4 lines: empty + title + empty + empty) - matches select menu
-    drawEmptyLine(innerWidth);
-    if (config.title) {
-        const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
-        drawCenteredLine(styledTitle, innerWidth);
-    }
-    else {
-        drawCenteredLine(`${BOLD}${theme.colors.accent}Loading${RESET}`, innerWidth);
-    }
-    drawEmptyLine(innerWidth);
-    drawEmptyLine(innerWidth);
+    // Header
+    drawSimpleHeader(innerWidth, config.title || "Loading");
     drawDivider(innerWidth);
     // Calculate centering for spinner within available space
     const contentLines = 1; // Just the spinner line
@@ -101,11 +93,9 @@ function renderSpinner(config, frame, message) {
     for (let i = 0; i < bottomPadding; i++) {
         drawEmptyLine(innerWidth);
     }
-    // Footer (4 lines: divider + empty + hint + empty)
+    // Footer
     drawDivider(innerWidth);
-    drawEmptyLine(innerWidth);
-    drawCenteredLine(`${DIM}Please wait...${RESET}`, innerWidth);
-    drawEmptyLine(innerWidth);
+    drawSimpleFooter(innerWidth, ["Please wait..."]);
     drawBottomBorder(innerWidth);
 }
 function renderFinalMessage(config, finalMessage) {
@@ -124,17 +114,8 @@ function renderFinalMessage(config, finalMessage) {
     drawVerticalPadding(paddingY);
     // Top border
     drawTopBorder(innerWidth);
-    // Header (4 lines: empty + title + empty + empty) - matches select menu
-    drawEmptyLine(innerWidth);
-    if (config.title) {
-        const styledTitle = `${BOLD}${theme.colors.accent}${config.title}${RESET}`;
-        drawCenteredLine(styledTitle, innerWidth);
-    }
-    else {
-        drawCenteredLine(`${BOLD}${theme.colors.accent}Complete${RESET}`, innerWidth);
-    }
-    drawEmptyLine(innerWidth);
-    drawEmptyLine(innerWidth);
+    // Header
+    drawSimpleHeader(innerWidth, config.title || "Complete");
     drawDivider(innerWidth);
     // Calculate centering for message within available space
     const contentLines = messageLineCount;
@@ -152,7 +133,7 @@ function renderFinalMessage(config, finalMessage) {
     for (let i = 0; i < bottomPadding; i++) {
         drawEmptyLine(innerWidth);
     }
-    // Footer (4 lines: divider + empty + hint + empty)
+    // Footer
     drawDivider(innerWidth);
     drawEmptyLine(innerWidth);
     drawEmptyLine(innerWidth);

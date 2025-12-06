@@ -7,15 +7,15 @@
 // =============================================================================
 // Select Menu
 // =============================================================================
-export { selectMenu, } from "./select";
+export { selectMenu } from "./select";
 // =============================================================================
 // Text Input
 // =============================================================================
-export { textInput, passwordInput, } from "./input";
+export { textInput, passwordInput } from "./input";
 // =============================================================================
 // Confirm Dialog
 // =============================================================================
-export { confirm, confirmYesNo, } from "./confirm";
+export { confirm, confirmYesNo } from "./confirm";
 // =============================================================================
 // Message Dialog
 // =============================================================================
@@ -30,4 +30,8 @@ SPINNER_DOTS, SPINNER_LINE, SPINNER_ARC, SPINNER_CIRCLE, SPINNER_BOX, SPINNER_BO
 // Help System
 // =============================================================================
 export { showHelp, isHelpKey, mergeHelpContent, createSimpleHelp, } from "./help";
+// =============================================================================
+// Shared Utilities
+// =============================================================================
+export { drawDialogHeader, drawDialogFooter, drawSimpleHeader, drawSimpleFooter, drawIconHeader, formatHints, } from "./shared";
 //# sourceMappingURL=index.js.map

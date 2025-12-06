@@ -21,12 +21,12 @@ import {
   drawDivider,
   drawEmptyLine,
   drawLine,
-  drawCenteredLine,
   drawVerticalPadding,
   getFrameDimensions,
   getPadding,
   DEFAULT_INTERNAL_PADDING,
 } from "../core/drawing";
+import { drawDialogHeader, drawDialogFooter } from "./shared";
 import type {
   MenuOption,
   SelectMenuOptions,
@@ -60,50 +60,6 @@ export interface SelectMenuConfig<T> extends SelectMenuOptions<T> {
 // =============================================================================
 // Header & Footer
 // =============================================================================
-
-function drawDefaultHeader(
-  innerWidth: number,
-  title: string,
-  appName?: string,
-  subtitle?: string,
-  description?: string,
-): void {
-  const theme = getCurrentTheme();
-
-  // Line 1: Empty line
-  drawEmptyLine(innerWidth);
-
-  // Line 2: [AppName bold+accent]  [title or subtitle dim] - centered
-  if (appName) {
-    const styledAppName = `${BOLD}${theme.colors.accent}${appName}${RESET}`;
-    const displaySubtitle = subtitle || title;
-    const styledSubtitle = `${DIM}${displaySubtitle}${RESET}`;
-    const headerLine = `${styledAppName}  ${styledSubtitle}`;
-    drawCenteredLine(headerLine, innerWidth);
-  } else {
-    const styledTitle = `${BOLD}${theme.colors.accent}${title}${RESET}`;
-    drawCenteredLine(styledTitle, innerWidth);
-  }
-
-  // Line 3: [description muted] OR empty line - centered
-  if (description) {
-    const styledDescription = `${theme.colors.textMuted}${description}${RESET}`;
-    drawCenteredLine(styledDescription, innerWidth);
-  } else {
-    drawEmptyLine(innerWidth);
-  }
-
-  // Line 4: Empty line
-  drawEmptyLine(innerWidth);
-}
-
-function drawDefaultFooter(innerWidth: number): void {
-  const hints = `${DIM}↑↓${RESET} Navigate  ${DIM}⏎${RESET} Select  ${DIM}q/⌫${RESET} Back`;
-
-  drawEmptyLine(innerWidth);
-  drawCenteredLine(hints, innerWidth);
-  drawEmptyLine(innerWidth);
-}
 
 // =============================================================================
 // Rendering
@@ -139,13 +95,12 @@ function renderSelectMenu<T>(
   if (config.renderHeader) {
     config.renderHeader(innerWidth);
   } else {
-    drawDefaultHeader(
-      innerWidth,
-      config.title,
-      config.appName,
-      config.subtitle,
-      config.description,
-    );
+    drawDialogHeader(innerWidth, {
+      title: config.title,
+      appName: config.appName,
+      subtitle: config.subtitle,
+      description: config.description,
+    });
   }
 
   drawDivider(innerWidth);
@@ -245,7 +200,9 @@ function renderSelectMenu<T>(
   if (config.renderFooter) {
     config.renderFooter(innerWidth);
   } else {
-    drawDefaultFooter(innerWidth);
+    drawDialogFooter(innerWidth, {
+      hints: ["↑↓ Navigate", "⏎ Select", "q/⌫ Back"],
+    });
   }
 
   drawBottomBorder(innerWidth);

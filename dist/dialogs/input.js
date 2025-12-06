@@ -5,28 +5,10 @@
  * and customizable styling.
  */
 import { clearScreen, hideCursor, showCursor } from "../core/terminal";
-import { getCurrentTheme, RESET, BOLD, DIM } from "../core/theme";
+import { getCurrentTheme, RESET, DIM } from "../core/theme";
 import { waitForKeypressCancellable, isPrintable } from "../core/keyboard";
-import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawCenteredLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
-// =============================================================================
-// Header & Footer
-// =============================================================================
-function drawDefaultHeader(innerWidth, title) {
-    const theme = getCurrentTheme();
-    const styledTitle = `${BOLD}${theme.colors.accent}${title}${RESET}`;
-    // Header (4 lines: empty + title + empty + empty) - matches select menu
-    drawEmptyLine(innerWidth);
-    drawCenteredLine(styledTitle, innerWidth);
-    drawEmptyLine(innerWidth);
-    drawEmptyLine(innerWidth);
-}
-function drawDefaultFooter(innerWidth) {
-    const pad = " ".repeat(DEFAULT_INTERNAL_PADDING);
-    const hints = `${DIM}⏎${RESET} Submit  ${DIM}⌫${RESET} Delete/Back  ${DIM}Ctrl+C${RESET} Cancel`;
-    drawEmptyLine(innerWidth);
-    drawLine(`${pad}${hints}`, innerWidth);
-    drawEmptyLine(innerWidth);
-}
+import { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine, drawLine, drawVerticalPadding, getFrameDimensions, getPadding, DEFAULT_INTERNAL_PADDING, } from "../core/drawing";
+import { drawSimpleHeader, drawDialogFooter } from "./shared";
 // =============================================================================
 // Rendering
 // =============================================================================
@@ -57,7 +39,7 @@ function renderTextInput(config, value, errorMessage) {
         config.renderHeader(innerWidth);
     }
     else {
-        drawDefaultHeader(innerWidth, config.title);
+        drawSimpleHeader(innerWidth, config.title);
     }
     drawDivider(innerWidth);
     // Internal padding (space between border and content)
@@ -114,7 +96,9 @@ function renderTextInput(config, value, errorMessage) {
         config.renderFooter(innerWidth);
     }
     else {
-        drawDefaultFooter(innerWidth);
+        drawDialogFooter(innerWidth, {
+            hints: ["⏎ Submit", "⌫ Delete/Back", "Ctrl+C Cancel"],
+        });
     }
     drawBottomBorder(innerWidth);
 }
