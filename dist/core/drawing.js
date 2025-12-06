@@ -91,9 +91,12 @@ let layoutConfig = {
 };
 /**
  * Set the layout configuration.
+ * Invalidates the cached frame dimensions.
  */
 export function setLayout(config) {
     layoutConfig = { ...layoutConfig, ...config };
+    // Invalidate cache since layout affects dimensions
+    cachedFrameDimensions = null;
 }
 /**
  * Get the current layout configuration.
@@ -107,23 +110,68 @@ export function getLayout() {
 export function getPadding() {
     return { x: layoutConfig.paddingX, y: layoutConfig.paddingY };
 }
+// =============================================================================
+// Frame Dimensions
+// =============================================================================
+/** Cached frame dimensions (invalidated on resize or layout change) */
+let cachedFrameDimensions = null;
+/** Whether the resize listener has been registered */
+let resizeListenerRegistered = false;
+/**
+ * Invalidate the cached frame dimensions.
+ * Called automatically on terminal resize or layout change.
+ */
+export function invalidateFrameDimensionsCache() {
+    cachedFrameDimensions = null;
+}
+/**
+ * Register resize listener to invalidate cache (called once lazily).
+ */
+function ensureResizeListenerRegistered() {
+    if (resizeListenerRegistered)
+        return;
+    process.stdout.on("resize", () => {
+        invalidateFrameDimensionsCache();
+    });
+    resizeListenerRegistered = true;
+}
 /**
  * Calculate the frame dimensions based on terminal size and padding.
+ * Results are cached and automatically invalidated on terminal resize or layout changes.
  *
- * @param termSize - Optional terminal size (defaults to current terminal)
+ * @param termSize - Optional terminal size (defaults to current terminal). If provided, caching is bypassed.
  * @returns Frame dimensions
  */
 export function getFrameDimensions(termSize) {
-    const size = termSize ?? getTerminalSize();
     const { paddingX, paddingY } = layoutConfig;
+    // If custom termSize is provided, calculate without caching
+    if (termSize) {
+        const width = termSize.width - paddingX * 2;
+        const height = termSize.height - paddingY * 2;
+        return {
+            width,
+            height,
+            innerWidth: width - 2,
+            innerHeight: height - 2,
+        };
+    }
+    // Ensure resize listener is registered for automatic cache invalidation
+    ensureResizeListenerRegistered();
+    // Return cached value if available
+    if (cachedFrameDimensions) {
+        return cachedFrameDimensions;
+    }
+    // Calculate and cache
+    const size = getTerminalSize();
     const width = size.width - paddingX * 2;
     const height = size.height - paddingY * 2;
-    return {
+    cachedFrameDimensions = {
         width,
         height,
         innerWidth: width - 2, // Subtract left and right border
         innerHeight: height - 2, // Subtract top and bottom border
     };
+    return cachedFrameDimensions;
 }
 /**
  * Calculate vertical padding to center content of a specific height.

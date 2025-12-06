@@ -59,7 +59,7 @@ BOX, BOX_SHARP, BOX_DOUBLE,
 // Layout configuration
 DEFAULT_PADDING_X, DEFAULT_PADDING_Y, DEFAULT_MAX_FRAME_WIDTH, DEFAULT_FRAME_WIDTH_PERCENT, setLayout, getLayout, getPadding, 
 // Frame dimensions
-getFrameDimensions, calculateCenteringPadding, calculateHorizontalCentering, calculateFrameWidth, 
+getFrameDimensions, invalidateFrameDimensionsCache, calculateCenteringPadding, calculateHorizontalCentering, calculateFrameWidth, 
 // Centered frame state
 beginCenteredFrame, endCenteredFrame, 
 // Drawing functions

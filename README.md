@@ -706,14 +706,21 @@ const { x, y } = getPadding();
 
 ### Frame Dimensions
 
-```typescript
-import { getFrameDimensions, calculateFrameWidth } from "quarktui";
+Frame dimensions are **memoized** for performance - the values are cached and automatically invalidated when:
+- The terminal is resized
+- `setLayout()` is called
 
-// Get dimensions adjusted for padding
+```typescript
+import { getFrameDimensions, calculateFrameWidth, invalidateFrameDimensionsCache } from "quarktui";
+
+// Get dimensions adjusted for padding (cached for performance)
 const { width, height, innerWidth, innerHeight } = getFrameDimensions();
 
 // Calculate centered frame width
 const frameWidth = calculateFrameWidth(60, 0.8); // max 60, 80% of terminal
+
+// Manually invalidate cache if needed (rarely necessary)
+invalidateFrameDimensionsCache();
 ```
 
 ### Default Values
@@ -776,7 +783,7 @@ export type { TerminalSize } from "./core";
 export { drawTopBorder, drawBottomBorder, drawDivider, drawEmptyLine } from "./core";
 export { drawLine, drawCenteredLine, drawRightAlignedLine, drawVerticalPadding } from "./core";
 export { BOX, BOX_SHARP, BOX_DOUBLE } from "./core";
-export { setLayout, getLayout, getPadding, getFrameDimensions } from "./core";
+export { setLayout, getLayout, getPadding, getFrameDimensions, invalidateFrameDimensionsCache } from "./core";
 
 // Window (advanced)
 export { createWindow } from "./window";

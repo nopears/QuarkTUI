@@ -217,6 +217,7 @@ export {
   getPadding,
   // Frame dimensions
   getFrameDimensions,
+  invalidateFrameDimensionsCache,
   calculateCenteringPadding,
   calculateHorizontalCentering,
   calculateFrameWidth,

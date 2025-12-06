@@ -86,6 +86,7 @@ export interface LayoutConfig {
 }
 /**
  * Set the layout configuration.
+ * Invalidates the cached frame dimensions.
  */
 export declare function setLayout(config: Partial<LayoutConfig>): void;
 /**
@@ -99,6 +100,11 @@ export declare function getPadding(): {
     x: number;
     y: number;
 };
+/**
+ * Invalidate the cached frame dimensions.
+ * Called automatically on terminal resize or layout change.
+ */
+export declare function invalidateFrameDimensionsCache(): void;
 /**
  * Dimensions of the drawable frame area.
  */
@@ -114,8 +120,9 @@ export interface FrameDimensions {
 }
 /**
  * Calculate the frame dimensions based on terminal size and padding.
+ * Results are cached and automatically invalidated on terminal resize or layout changes.
  *
- * @param termSize - Optional terminal size (defaults to current terminal)
+ * @param termSize - Optional terminal size (defaults to current terminal). If provided, caching is bypassed.
  * @returns Frame dimensions
  */
 export declare function getFrameDimensions(termSize?: TerminalSize): FrameDimensions;
