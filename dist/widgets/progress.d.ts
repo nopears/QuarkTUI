@@ -6,7 +6,7 @@
  */
 import type { Widget, Alignment } from "./types";
 /** Progress bar visual style */
-export type ProgressBarStyle = "block" | "line" | "ascii" | "dots" | "gradient";
+export type ProgressBarStyle = "block" | "line" | "ascii" | "dots" | "gradient" | "audio";
 /** Progress bar character set */
 interface ProgressBarChars {
     filled: string;
@@ -28,10 +28,12 @@ export interface ProgressBarOptions {
     showPercentage?: boolean;
     /** Show value label (e.g., "50/100") */
     showValue?: boolean;
-    /** Custom label to display (overrides percentage/value) */
+    /** Custom label to display */
     label?: string;
     /** Label position relative to bar */
     labelPosition?: "left" | "right" | "inside" | "none";
+    /** Position for percentage/value display */
+    valuePosition?: "left" | "right" | "inside" | "none";
     /** Horizontal alignment of the entire widget */
     align?: Alignment;
     /** Color for the filled portion (uses theme highlight by default) */
@@ -56,22 +58,25 @@ export interface ProgressBarOptions {
  * ProgressBar({ value: 50, max: 100, showValue: true })
  *
  * @example
- * // Styled progress bar with custom width
+ * // Audio player style with position indicator
  * ProgressBar({
- *   value: 0.75,
- *   width: 30,
- *   style: "line",
- *   showPercentage: true,
+ *   value: 45,
+ *   max: 100,
+ *   style: "audio",
+ *   label: "Now Playing",
+ *   labelPosition: "left",
+ *   valuePosition: "right",
  * })
  *
  * @example
- * // ASCII style with label on left
+ * // ASCII style with label on left and percentage on right
  * ProgressBar({
  *   value: 3,
  *   max: 10,
  *   style: "ascii",
+ *   label: "Loading",
  *   labelPosition: "left",
- *   showValue: true,
+ *   valuePosition: "right",
  * })
  *
  * @example

@@ -40,6 +40,12 @@ const CHAR_SETS = {
         left: "▐",
         right: "▌",
     },
+    audio: {
+        filled: "━",
+        empty: "─",
+        left: "",
+        right: "",
+    },
 };
 // =============================================================================
 // Helper Functions
@@ -75,9 +81,19 @@ function alignContent(content, width, alignment) {
 /**
  * Build the progress bar string.
  */
-function buildProgressBar(percentage, barWidth, chars, filledColor, emptyColor) {
+function buildProgressBar(percentage, barWidth, chars, filledColor, emptyColor, style) {
     const fillWidth = Math.round((percentage / 100) * barWidth);
     const emptyWidth = barWidth - fillWidth;
+    // Audio style with position indicator
+    if (style === "audio") {
+        const hasPosition = fillWidth < barWidth;
+        const positionIndicator = "●";
+        const filledContent = repeat(chars.filled, fillWidth);
+        const emptyContent = repeat(chars.empty, Math.max(0, emptyWidth - (hasPosition ? 1 : 0)));
+        const filledPart = filledColor + filledContent + positionIndicator + RESET;
+        const emptyPart = emptyColor + emptyContent + RESET;
+        return chars.left + filledPart + emptyPart + chars.right;
+    }
     const filledPart = filledColor + repeat(chars.filled, fillWidth) + RESET;
     const emptyPart = emptyColor + repeat(chars.empty, emptyWidth) + RESET;
     return chars.left + filledPart + emptyPart + chars.right;
@@ -110,7 +126,7 @@ class ProgressBarWidget {
         this.options = options;
     }
     render(ctx) {
-        const { value, max = 1, width, style = "block", showPercentage = true, labelPosition = "right", align = "left", filledColor, emptyColor, chars: customChars, } = this.options;
+        const { value, max = 1, width, style = "block", showPercentage = true, labelPosition = "none", valuePosition = "right", align = "left", filledColor, emptyColor, chars: customChars, } = this.options;
         const theme = getCurrentTheme();
         // Calculate percentage
         const normalizedValue = clamp(value, 0, max);
@@ -124,9 +140,15 @@ class ProgressBarWidget {
             ...baseChars,
             ...customChars,
         };
-        // Format label
-        const label = formatLabel(percentage, normalizedValue, max, this.options);
+        // Format label and value
+        const label = this.options.label || "";
         const labelLen = visibleLength(label);
+        const valueStr = this.options.showValue
+            ? `${Math.round(normalizedValue)}/${Math.round(max)}`
+            : this.options.showPercentage !== false
+                ? `${Math.round(percentage)}%`
+                : "";
+        const valueLen = visibleLength(valueStr);
         // Calculate bar width
         const bracketsWidth = visibleLength(chars.left) + visibleLength(chars.right);
         let barWidth;
@@ -134,44 +156,47 @@ class ProgressBarWidget {
             barWidth = width - bracketsWidth;
         }
         else {
-            // Auto-fill available width, accounting for label
-            const labelSpace = labelPosition === "left" || labelPosition === "right"
-                ? labelLen + 1 // +1 for space separator
-                : 0;
-            barWidth = ctx.innerWidth - bracketsWidth - labelSpace;
+            // Auto-fill available width, accounting for labels and values
+            let totalSpace = 0;
+            if (labelPosition === "left" && labelLen > 0) {
+                totalSpace += labelLen + 1; // +1 for space separator
+            }
+            if (labelPosition === "right" && labelLen > 0) {
+                totalSpace += labelLen + 1; // +1 for space separator
+            }
+            if (valuePosition === "left" && valueLen > 0) {
+                totalSpace += valueLen + 1; // +1 for space separator
+            }
+            if (valuePosition === "right" && valueLen > 0) {
+                totalSpace += valueLen + 1; // +1 for space separator
+            }
+            barWidth = Math.max(1, ctx.innerWidth - bracketsWidth - totalSpace);
         }
         barWidth = Math.max(1, barWidth);
         // Build the bar
-        const bar = buildProgressBar(percentage, barWidth, chars, fillColor, bgColor);
-        // Build the final output based on label position
+        const bar = buildProgressBar(percentage, barWidth, chars, fillColor, bgColor, style);
+        // Build the final output
         let output;
-        switch (labelPosition) {
-            case "left":
-                output = label ? `${label} ${bar}` : bar;
-                break;
-            case "right":
-                output = label ? `${bar} ${label}` : bar;
-                break;
-            case "inside": {
-                // Overlay label in center of bar
-                const barOnlyWidth = barWidth + bracketsWidth;
-                if (labelLen > 0 && labelLen < barOnlyWidth) {
-                    const barStr = buildProgressBar(percentage, barWidth, chars, fillColor, bgColor);
-                    // For "inside", we just append the label after the bar
-                    // True overlay would require more complex ANSI manipulation
-                    output = `${barStr} ${label}`;
-                }
-                else {
-                    output = bar;
-                }
-                break;
-            }
-            case "none":
-                output = bar;
-                break;
-            default:
-                output = label ? `${bar} ${label}` : bar;
+        const parts = [];
+        // Add left label
+        if (labelPosition === "left" && labelLen > 0) {
+            parts.push(label);
         }
+        // Add left value
+        if (valuePosition === "left" && valueLen > 0) {
+            parts.push(valueStr);
+        }
+        // Add bar
+        parts.push(bar);
+        // Add right value
+        if (valuePosition === "right" && valueLen > 0) {
+            parts.push(valueStr);
+        }
+        // Add right label
+        if (labelPosition === "right" && labelLen > 0) {
+            parts.push(label);
+        }
+        output = parts.join(" ");
         // Apply alignment
         const alignedOutput = alignContent(output, ctx.innerWidth, align);
         return [alignedOutput];
@@ -195,22 +220,25 @@ class ProgressBarWidget {
  * ProgressBar({ value: 50, max: 100, showValue: true })
  *
  * @example
- * // Styled progress bar with custom width
+ * // Audio player style with position indicator
  * ProgressBar({
- *   value: 0.75,
- *   width: 30,
- *   style: "line",
- *   showPercentage: true,
+ *   value: 45,
+ *   max: 100,
+ *   style: "audio",
+ *   label: "Now Playing",
+ *   labelPosition: "left",
+ *   valuePosition: "right",
  * })
  *
  * @example
- * // ASCII style with label on left
+ * // ASCII style with label on left and percentage on right
  * ProgressBar({
  *   value: 3,
  *   max: 10,
  *   style: "ascii",
+ *   label: "Loading",
  *   labelPosition: "left",
- *   showValue: true,
+ *   valuePosition: "right",
  * })
  *
  * @example

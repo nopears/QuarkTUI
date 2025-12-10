@@ -14,7 +14,7 @@ import type { Widget, RenderContext, Alignment } from "./types";
 // =============================================================================
 
 /** Progress bar visual style */
-export type ProgressBarStyle = "block" | "line" | "ascii" | "dots" | "gradient";
+export type ProgressBarStyle = "block" | "line" | "ascii" | "dots" | "gradient" | "audio";
 
 /** Progress bar character set */
 interface ProgressBarChars {
@@ -89,6 +89,12 @@ const CHAR_SETS: Record<ProgressBarStyle, ProgressBarChars> = {
     left: "▐",
     right: "▌",
   },
+  audio: {
+    filled: "━",
+    empty: "─",
+    left: "",
+    right: "",
+  },
 };
 
 // =============================================================================
@@ -141,9 +147,23 @@ function buildProgressBar(
   chars: ProgressBarChars,
   filledColor: string,
   emptyColor: string,
+  style?: ProgressBarStyle,
 ): string {
   const fillWidth = Math.round((percentage / 100) * barWidth);
   const emptyWidth = barWidth - fillWidth;
+
+  // Audio style with position indicator
+  if (style === "audio") {
+    const hasPosition = fillWidth < barWidth;
+    const positionIndicator = "●";
+    const filledContent = repeat(chars.filled, fillWidth);
+    const emptyContent = repeat(chars.empty, Math.max(0, emptyWidth - (hasPosition ? 1 : 0)));
+
+    const filledPart = filledColor + filledContent + positionIndicator + RESET;
+    const emptyPart = emptyColor + emptyContent + RESET;
+
+    return chars.left + filledPart + emptyPart + chars.right;
+  }
 
   const filledPart = filledColor + repeat(chars.filled, fillWidth) + RESET;
   const emptyPart = emptyColor + repeat(chars.empty, emptyWidth) + RESET;
@@ -257,7 +277,7 @@ class ProgressBarWidget implements Widget {
     barWidth = Math.max(1, barWidth);
 
     // Build the bar
-    const bar = buildProgressBar(percentage, barWidth, chars, fillColor, bgColor);
+    const bar = buildProgressBar(percentage, barWidth, chars, fillColor, bgColor, style);
 
     // Build the final output
     let output: string;
@@ -314,12 +334,14 @@ class ProgressBarWidget implements Widget {
  * ProgressBar({ value: 50, max: 100, showValue: true })
  *
  * @example
- * // Styled progress bar with custom width
+ * // Audio player style with position indicator
  * ProgressBar({
- *   value: 0.75,
- *   width: 30,
- *   style: "line",
- *   showPercentage: true,
+ *   value: 45,
+ *   max: 100,
+ *   style: "audio",
+ *   label: "Now Playing",
+ *   labelPosition: "left",
+ *   valuePosition: "right",
  * })
  *
  * @example

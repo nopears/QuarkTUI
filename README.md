@@ -249,8 +249,18 @@ ProgressBar({ value: 0.5 })
 // With value display (50/100)
 ProgressBar({ value: 50, max: 100, showValue: true })
 
-// Different styles: "block" | "line" | "ascii" | "dots" | "gradient"
+// Different styles: "block" | "line" | "ascii" | "dots" | "gradient" | "audio"
 ProgressBar({ value: 0.75, style: "line" })
+
+// Audio player style with position indicator
+ProgressBar({
+  value: 45,
+  max: 100,
+  style: "audio",
+  label: "Now Playing",
+  labelPosition: "left",
+  valuePosition: "right",
+})
 
 // Label on left, percentage on right
 ProgressBar({
@@ -293,11 +303,16 @@ Progress(0.75, "line")  // 75% with line style
 - `value`: Progress value (0 to 1, or 0 to max)
 - `max`: Maximum value (default: 1)
 - `width`: Bar width in characters (default: auto-fill)
-- `style`: Visual style - `"block"`, `"line"`, `"ascii"`, `"dots"`, `"gradient"`
+- `style`: Visual style - `"block"`, `"line"`, `"ascii"`, `"dots"`, `"gradient"`, `"audio"`
 - `showPercentage`: Show percentage label (default: true)
 - `showValue`: Show value label (e.g., "50/100")
 - `label`: Custom label text
 - `labelPosition`: Position for custom label - `"left"`, `"right"`, `"inside"`, `"none"` (default: `"none"`)
+- `valuePosition`: Position for percentage/value display - `"left"`, `"right"`, `"inside"`, `"none"` (default: `"right"`)
+- `align`: Horizontal alignment
+- `filledColor`: Custom color for filled portion
+- `emptyColor`: Custom color for empty portion
+- `chars`: Custom character set
 - `valuePosition`: Position for percentage/value display - `"left"`, `"right"`, `"inside"`, `"none"` (default: `"right"`)
 - `align`: Horizontal alignment
 - `filledColor`: Custom color for filled portion
