@@ -38,10 +38,12 @@ export interface ProgressBarOptions {
   showPercentage?: boolean;
   /** Show value label (e.g., "50/100") */
   showValue?: boolean;
-  /** Custom label to display (overrides percentage/value) */
+  /** Custom label to display */
   label?: string;
   /** Label position relative to bar */
   labelPosition?: "left" | "right" | "inside" | "none";
+  /** Position for percentage/value display */
+  valuePosition?: "left" | "right" | "inside" | "none";
   /** Horizontal alignment of the entire widget */
   align?: Alignment;
   /** Color for the filled portion (uses theme highlight by default) */
@@ -192,7 +194,8 @@ class ProgressBarWidget implements Widget {
       width,
       style = "block",
       showPercentage = true,
-      labelPosition = "right",
+      labelPosition = "none",
+      valuePosition = "right",
       align = "left",
       filledColor,
       emptyColor,
@@ -216,9 +219,16 @@ class ProgressBarWidget implements Widget {
       ...customChars,
     };
 
-    // Format label
-    const label = formatLabel(percentage, normalizedValue, max, this.options);
+    // Format label and value
+    const label = this.options.label || "";
     const labelLen = visibleLength(label);
+
+    const valueStr = this.options.showValue
+      ? `${Math.round(normalizedValue)}/${Math.round(max)}`
+      : this.options.showPercentage !== false
+        ? `${Math.round(percentage)}%`
+        : "";
+    const valueLen = visibleLength(valueStr);
 
     // Calculate bar width
     const bracketsWidth = visibleLength(chars.left) + visibleLength(chars.right);
@@ -227,12 +237,21 @@ class ProgressBarWidget implements Widget {
     if (width) {
       barWidth = width - bracketsWidth;
     } else {
-      // Auto-fill available width, accounting for label
-      const labelSpace =
-        labelPosition === "left" || labelPosition === "right"
-          ? labelLen + 1 // +1 for space separator
-          : 0;
-      barWidth = ctx.innerWidth - bracketsWidth - labelSpace;
+      // Auto-fill available width, accounting for labels and values
+      let totalSpace = 0;
+      if (labelPosition === "left" && labelLen > 0) {
+        totalSpace += labelLen + 1; // +1 for space separator
+      }
+      if (labelPosition === "right" && labelLen > 0) {
+        totalSpace += labelLen + 1; // +1 for space separator
+      }
+      if (valuePosition === "left" && valueLen > 0) {
+        totalSpace += valueLen + 1; // +1 for space separator
+      }
+      if (valuePosition === "right" && valueLen > 0) {
+        totalSpace += valueLen + 1; // +1 for space separator
+      }
+      barWidth = Math.max(1, ctx.innerWidth - bracketsWidth - totalSpace);
     }
 
     barWidth = Math.max(1, barWidth);
@@ -240,41 +259,34 @@ class ProgressBarWidget implements Widget {
     // Build the bar
     const bar = buildProgressBar(percentage, barWidth, chars, fillColor, bgColor);
 
-    // Build the final output based on label position
+    // Build the final output
     let output: string;
+    const parts: string[] = [];
 
-    switch (labelPosition) {
-      case "left":
-        output = label ? `${label} ${bar}` : bar;
-        break;
-      case "right":
-        output = label ? `${bar} ${label}` : bar;
-        break;
-      case "inside": {
-        // Overlay label in center of bar
-        const barOnlyWidth = barWidth + bracketsWidth;
-        if (labelLen > 0 && labelLen < barOnlyWidth) {
-          const barStr = buildProgressBar(
-            percentage,
-            barWidth,
-            chars,
-            fillColor,
-            bgColor,
-          );
-          // For "inside", we just append the label after the bar
-          // True overlay would require more complex ANSI manipulation
-          output = `${barStr} ${label}`;
-        } else {
-          output = bar;
-        }
-        break;
-      }
-      case "none":
-        output = bar;
-        break;
-      default:
-        output = label ? `${bar} ${label}` : bar;
+    // Add left label
+    if (labelPosition === "left" && labelLen > 0) {
+      parts.push(label);
     }
+
+    // Add left value
+    if (valuePosition === "left" && valueLen > 0) {
+      parts.push(valueStr);
+    }
+
+    // Add bar
+    parts.push(bar);
+
+    // Add right value
+    if (valuePosition === "right" && valueLen > 0) {
+      parts.push(valueStr);
+    }
+
+    // Add right label
+    if (labelPosition === "right" && labelLen > 0) {
+      parts.push(label);
+    }
+
+    output = parts.join(" ");
 
     // Apply alignment
     const alignedOutput = alignContent(output, ctx.innerWidth, align);
@@ -311,13 +323,14 @@ class ProgressBarWidget implements Widget {
  * })
  *
  * @example
- * // ASCII style with label on left
+ * // ASCII style with label on left and percentage on right
  * ProgressBar({
  *   value: 3,
  *   max: 10,
  *   style: "ascii",
+ *   label: "Loading",
  *   labelPosition: "left",
- *   showValue: true,
+ *   valuePosition: "right",
  * })
  *
  * @example

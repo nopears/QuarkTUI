@@ -252,13 +252,22 @@ ProgressBar({ value: 50, max: 100, showValue: true })
 // Different styles: "block" | "line" | "ascii" | "dots" | "gradient"
 ProgressBar({ value: 0.75, style: "line" })
 
-// Label on left with ASCII style
+// Label on left, percentage on right
 ProgressBar({
   value: 3,
   max: 10,
   style: "ascii",
+  label: "Loading",
   labelPosition: "left",
-  showValue: true,
+  valuePosition: "right",
+})
+
+// Percentage on left, label on right
+ProgressBar({
+  value: 0.5,
+  label: "Status",
+  labelPosition: "right",
+  valuePosition: "left",
 })
 
 // Custom width and centered
@@ -288,7 +297,8 @@ Progress(0.75, "line")  // 75% with line style
 - `showPercentage`: Show percentage label (default: true)
 - `showValue`: Show value label (e.g., "50/100")
 - `label`: Custom label text
-- `labelPosition`: `"left"`, `"right"`, `"inside"`, `"none"`
+- `labelPosition`: Position for custom label - `"left"`, `"right"`, `"inside"`, `"none"` (default: `"none"`)
+- `valuePosition`: Position for percentage/value display - `"left"`, `"right"`, `"inside"`, `"none"` (default: `"right"`)
 - `align`: Horizontal alignment
 - `filledColor`: Custom color for filled portion
 - `emptyColor`: Custom color for empty portion
