@@ -34,6 +34,8 @@ export interface FilePickerOptions {
     folder?: string;
     folderOpen?: string;
     file?: string;
+    /** Icons for specific file types by extension */
+    byExtension?: Record<string, string>;
   };
   /** Custom labels */
   labels?: {
@@ -67,6 +69,75 @@ const DEFAULT_ICONS = {
   folder: "📁",
   folderOpen: "📂",
   file: "📄",
+  byExtension: {
+    // Documents
+    ".pdf": "📕",
+    ".doc": "📘",
+    ".docx": "📘",
+    ".txt": "📝",
+    ".md": "📝",
+    ".rtf": "📄",
+    // Spreadsheets
+    ".xls": "📊",
+    ".xlsx": "📊",
+    ".csv": "📊",
+    // Images
+    ".jpg": "🖼️",
+    ".jpeg": "🖼️",
+    ".png": "🖼️",
+    ".gif": "🖼️",
+    ".svg": "🖼️",
+    ".bmp": "🖼️",
+    ".webp": "🖼️",
+    // Audio
+    ".mp3": "🎵",
+    ".wav": "🎵",
+    ".flac": "🎵",
+    ".aac": "🎵",
+    ".m4a": "🎵",
+    ".ogg": "🎵",
+    // Video
+    ".mp4": "🎬",
+    ".avi": "🎬",
+    ".mkv": "🎬",
+    ".mov": "🎬",
+    ".wmv": "🎬",
+    ".flv": "🎬",
+    ".webm": "🎬",
+    // Archives
+    ".zip": "📦",
+    ".rar": "📦",
+    ".7z": "📦",
+    ".tar": "📦",
+    ".gz": "📦",
+    // Code
+    ".js": "📜",
+    ".ts": "📜",
+    ".jsx": "📜",
+    ".tsx": "📜",
+    ".py": "🐍",
+    ".java": "☕",
+    ".cpp": "⚙️",
+    ".c": "⚙️",
+    ".go": "🐹",
+    ".rs": "🦀",
+    ".rb": "💎",
+    ".php": "🐘",
+    ".html": "🌐",
+    ".css": "🎨",
+    ".json": "📋",
+    ".xml": "📋",
+    ".yaml": "📋",
+    ".yml": "📋",
+    ".toml": "📋",
+    ".sh": "🔧",
+    ".bash": "🔧",
+    ".zsh": "🔧",
+    // Executables
+    ".exe": "⚡",
+    ".app": "⚡",
+    ".dmg": "⚡",
+  },
 };
 
 const DEFAULT_LABELS = {
@@ -111,6 +182,21 @@ function truncatePath(dirPath: string, maxLen: number): string {
 function getExtension(filename: string): string {
   const ext = path.extname(filename).slice(1).toUpperCase();
   return ext || "FILE";
+}
+
+/**
+ * Get the appropriate icon for a file based on its extension.
+ */
+function getFileIcon(
+  filename: string,
+  defaultIcon: string,
+  extensionIcons?: Record<string, string>,
+): string {
+  const ext = path.extname(filename).toLowerCase();
+  if (extensionIcons && ext in extensionIcons) {
+    return extensionIcons[ext];
+  }
+  return defaultIcon;
 }
 
 /**
@@ -186,8 +272,13 @@ async function listDirectoryEntries(
       }
 
       if (includeFile) {
+        const fileIcon = getFileIcon(
+          name,
+          icons.file,
+          icons.byExtension,
+        );
         files.push({
-          label: `${icons.file} ${name}`,
+          label: `${fileIcon} ${name}`,
           value: fullPath,
           type: "file",
           hint: getExtension(name),

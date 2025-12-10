@@ -24,6 +24,8 @@ export interface FilePickerOptions {
         folder?: string;
         folderOpen?: string;
         file?: string;
+        /** Icons for specific file types by extension */
+        byExtension?: Record<string, string>;
     };
     /** Custom labels */
     labels?: {
