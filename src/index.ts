@@ -75,6 +75,9 @@ export {
   type ColumnDef,
   type ColumnWidth,
   type ColumnsOptions,
+  type BoxOptions,
+  type BoxStyle,
+  type TitlePosition,
   // Primitives
   Text,
   Spacer,
@@ -90,6 +93,12 @@ export {
   HR,
   Columns,
   KeyValue,
+  Box,
+  Panel,
+  InfoBox,
+  WarningBox,
+  ErrorBox,
+  SuccessBox,
 } from "./widgets";
 
 // Renderer
@@ -279,6 +288,19 @@ export {
   type MenuOption,
   type SelectMenuOptions,
   type SelectResult,
+} from "./dialogs";
+
+// =============================================================================
+// Dialogs - Multi-Select
+// =============================================================================
+
+export {
+  multiSelect,
+  quickMultiSelect,
+  type MultiSelectConfig,
+  type MultiSelectOption,
+  type MultiSelectOptions,
+  type MultiSelectResult,
 } from "./dialogs";
 
 // =============================================================================

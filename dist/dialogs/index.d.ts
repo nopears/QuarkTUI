@@ -17,4 +17,6 @@ export type { SpinnerOptions, SpinnerController } from "./spinner";
 export { showHelp, isHelpKey, mergeHelpContent, createSimpleHelp, } from "./help";
 export type { KeyBinding, HelpSection, HelpContent } from "./help";
 export { drawDialogHeader, drawDialogFooter, drawSimpleHeader, drawSimpleFooter, drawIconHeader, formatHints, type DialogHeaderOptions, type DialogFooterOptions, } from "./shared";
+export { multiSelect, quickMultiSelect, type MultiSelectConfig, } from "./multiselect";
+export type { MultiSelectOption, MultiSelectOptions, MultiSelectResult, } from "./multiselect";
 //# sourceMappingURL=index.d.ts.map

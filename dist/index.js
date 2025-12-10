@@ -51,7 +51,7 @@ export { Component } from "./component";
 // =============================================================================
 export { 
 // Primitives
-Text, Spacer, Row, Table, ProgressBar, Progress, List, BulletList, NumberedList, CheckboxList, Divider, HR, Columns, KeyValue, } from "./widgets";
+Text, Spacer, Row, Table, ProgressBar, Progress, List, BulletList, NumberedList, CheckboxList, Divider, HR, Columns, KeyValue, Box, Panel, InfoBox, WarningBox, ErrorBox, SuccessBox, } from "./widgets";
 // Renderer
 export { render, renderFitted } from "./renderer";
 // =============================================================================
@@ -122,6 +122,10 @@ calculateContentHeight, horizontalRule, } from "./core";
 // Dialogs - Select Menu
 // =============================================================================
 export { selectMenu, } from "./dialogs";
+// =============================================================================
+// Dialogs - Multi-Select
+// =============================================================================
+export { multiSelect, quickMultiSelect, } from "./dialogs";
 // =============================================================================
 // Dialogs - Text Input
 // =============================================================================

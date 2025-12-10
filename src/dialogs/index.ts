@@ -93,3 +93,19 @@ export {
   type DialogHeaderOptions,
   type DialogFooterOptions,
 } from "./shared";
+
+// =============================================================================
+// Multi-Select Dialog
+// =============================================================================
+
+export {
+  multiSelect,
+  quickMultiSelect,
+  type MultiSelectConfig,
+} from "./multiselect";
+
+export type {
+  MultiSelectOption,
+  MultiSelectOptions,
+  MultiSelectResult,
+} from "./multiselect";

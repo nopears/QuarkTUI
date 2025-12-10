@@ -34,7 +34,8 @@ export type WidgetType =
   | "progress"
   | "list"
   | "divider"
-  | "columns";
+  | "columns"
+  | "box";
 
 /**
  * Base interface for all widgets.

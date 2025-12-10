@@ -480,6 +480,92 @@ KeyValue("Status:", "Active", 15)  // with label width
 - `defaultWidth`: Default column width (default: `"flex"`)
 - `minWidth`: Minimum column width (default: 1)
 
+### Box / Panel
+
+Container widget with borders, titles, and footers.
+
+```typescript
+import { Box, Panel, InfoBox, WarningBox, ErrorBox, SuccessBox } from "quarktui";
+
+// Simple box with content
+Box("Hello, World!")
+
+// Box with title
+Box({
+  content: "This is the content",
+  title: "My Box",
+})
+
+// Box with title and footer
+Box({
+  content: ["Line 1", "Line 2", "Line 3"],
+  title: "Information",
+  footer: "Press Enter to continue",
+  style: "double",
+})
+
+// Styled box with custom padding
+Box({
+  content: "Important message!",
+  title: "Warning",
+  titleStyle: "warning",
+  borderStyle: "warning",
+  paddingX: 2,
+  paddingY: 1,
+})
+
+// Centered box with fixed width
+Box({
+  content: "Centered content",
+  width: 40,
+  align: "center",
+  contentAlign: "center",
+})
+
+// Box with nested widgets
+Box({
+  content: [
+    Text("Header", { style: "bold" }),
+    Divider(),
+    BulletList(["Item 1", "Item 2"]),
+  ],
+  title: "Widget Box",
+})
+
+// Panel shorthand (box with title)
+Panel("Settings", "Configure your options here")
+Panel("User Info", [
+  KeyValue("Name:", "John Doe"),
+  KeyValue("Email:", "john@example.com"),
+])
+
+// Semantic box helpers
+InfoBox("This is helpful information.")
+WarningBox("Please proceed with caution.")
+ErrorBox("Something went wrong!")
+SuccessBox("Operation completed successfully!")
+```
+
+**Border Styles:** `"rounded"` | `"sharp"` | `"double"` | `"thick"` | `"dashed"` | `"ascii"` | `"none"`
+
+**Options:**
+- `content`: String, Widget, or array of strings/widgets
+- `style`: Border style (default: `"rounded"`)
+- `title`: Title in top border
+- `titleAlign`: Title position (`"left"` | `"center"` | `"right"`)
+- `titleStyle`: Style for title text
+- `footer`: Footer in bottom border
+- `footerAlign`: Footer position
+- `footerStyle`: Style for footer text
+- `paddingX`: Horizontal padding inside box (default: 1)
+- `paddingY`: Vertical padding inside box (default: 0)
+- `borderStyle`: Style for border characters
+- `width`: Fixed width (default: auto-fit)
+- `minWidth`: Minimum width
+- `maxWidth`: Maximum width
+- `contentAlign`: Alignment of content inside box
+- `align`: Alignment of the box itself
+
 ---
 
 ## Dialogs
@@ -513,6 +599,74 @@ if (result.type === "selected") {
 - `title`: Menu title
 - `options`: Array of `{ label, value, hint?, disabled? }`
 - `selectedIndex`: Initial selected index
+- `infoLines`: Additional info lines above options
+- `appName`: App name for header
+- `subtitle`: Subtitle for header
+- `description`: Description below header
+
+### Multi-Select Dialog
+
+Select multiple items from a list with checkbox-style selection.
+
+```typescript
+import { multiSelect, quickMultiSelect } from "quarktui";
+
+// Basic multi-select
+const result = await multiSelect({
+  title: "Select your preferences",
+  options: [
+    { label: "Option A", value: "a" },
+    { label: "Option B", value: "b", checked: true },
+    { label: "Option C", value: "c" },
+    { label: "Disabled", value: "d", disabled: true },
+  ],
+});
+
+if (result.type === "selected") {
+  console.log("Selected:", result.values); // ["a", "b", "c"]
+} else {
+  console.log("Cancelled");
+}
+
+// With min/max constraints
+const result2 = await multiSelect({
+  title: "Choose 2-4 items",
+  options: items,
+  minSelections: 2,
+  maxSelections: 4,
+});
+
+// With app branding
+const result3 = await multiSelect({
+  title: "Features",
+  appName: "♪ LAZYGIG",
+  subtitle: "Settings",
+  description: "Enable or disable features",
+  options: features,
+});
+
+// Quick multi-select from strings
+const selected = await quickMultiSelect(
+  "Choose toppings",
+  ["Cheese", "Pepperoni", "Mushrooms", "Olives"],
+  [0, 1], // Cheese and Pepperoni pre-selected
+);
+```
+
+**Keyboard Shortcuts:**
+- `↑/↓` - Navigate options
+- `Space` - Toggle selection
+- `Enter` - Confirm selection
+- `a` - Select all
+- `n` - Deselect all (none)
+- `q/Esc` - Cancel
+
+**Options:**
+- `title`: Dialog title
+- `options`: Array of `{ label, value, hint?, disabled?, checked? }`
+- `focusedIndex`: Initial focused index
+- `minSelections`: Minimum selections required (default: 0)
+- `maxSelections`: Maximum selections allowed (default: unlimited)
 - `infoLines`: Additional info lines above options
 - `appName`: App name for header
 - `subtitle`: Subtitle for header
@@ -1027,15 +1181,17 @@ invalidateFrameDimensionsCache();
 export { Component, type ComponentConfig } from "./component";
 
 // Widgets
-export { Text, Spacer, Row, Table, ProgressBar, Progress, List, BulletList, NumberedList, CheckboxList, Divider, HR, Columns, KeyValue } from "./widgets";
-export type { Widget, RenderContext, TableCell, TableColumn, ProgressBarOptions, ProgressBarStyle, ListItem, ListOptions, ListStyle, DividerOptions, DividerStyle, ColumnDef, ColumnWidth, ColumnsOptions } from "./widgets";
+export { Text, Spacer, Row, Table, ProgressBar, Progress, List, BulletList, NumberedList, CheckboxList, Divider, HR, Columns, KeyValue, Box, Panel, InfoBox, WarningBox, ErrorBox, SuccessBox } from "./widgets";
+export type { Widget, RenderContext, TableCell, TableColumn, ProgressBarOptions, ProgressBarStyle, ListItem, ListOptions, ListStyle, DividerOptions, DividerStyle, ColumnDef, ColumnWidth, ColumnsOptions, BoxOptions, BoxStyle, TitlePosition } from "./widgets";
 
 // Dialogs
 export { selectMenu, textInput, passwordInput, confirm, confirmYesNo } from "./dialogs";
+export { multiSelect, quickMultiSelect } from "./dialogs";
 export { showMessage, showMessageAndWait, message, info, success, warning, error } from "./dialogs";
 export { showSpinner, withSpinner, SPINNER_DOTS, SPINNER_CIRCLE, /* ... */ } from "./dialogs";
 export { showHelp } from "./dialogs";
 export type { MenuOption, SelectMenuOptions, SelectResult } from "./dialogs";
+export type { MultiSelectOption, MultiSelectOptions, MultiSelectResult } from "./dialogs";
 export type { TextInputOptions, TextInputResult } from "./dialogs";
 export type { ConfirmOptions, ConfirmResult } from "./dialogs";
 export type { MessageType, MessageOptions } from "./dialogs";

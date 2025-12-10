@@ -34,4 +34,8 @@ export { showHelp, isHelpKey, mergeHelpContent, createSimpleHelp, } from "./help
 // Shared Utilities
 // =============================================================================
 export { drawDialogHeader, drawDialogFooter, drawSimpleHeader, drawSimpleFooter, drawIconHeader, formatHints, } from "./shared";
+// =============================================================================
+// Multi-Select Dialog
+// =============================================================================
+export { multiSelect, quickMultiSelect, } from "./multiselect";
 //# sourceMappingURL=index.js.map

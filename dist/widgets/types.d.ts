@@ -15,7 +15,7 @@ export interface RenderContext {
     contentHeight: number;
 }
 /** Supported widget types */
-export type WidgetType = "text" | "spacer" | "row" | "table" | "progress" | "list" | "divider" | "columns";
+export type WidgetType = "text" | "spacer" | "row" | "table" | "progress" | "list" | "divider" | "columns" | "box";
 /**
  * Base interface for all widgets.
  * Each widget knows how to render itself to string lines.

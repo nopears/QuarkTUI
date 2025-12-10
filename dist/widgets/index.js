@@ -12,4 +12,5 @@ export { ProgressBar, Progress } from "./progress";
 export { List, BulletList, NumberedList, CheckboxList } from "./list";
 export { Divider, HR } from "./divider";
 export { Columns, KeyValue } from "./columns";
+export { Box, Panel, InfoBox, WarningBox, ErrorBox, SuccessBox } from "./box";
 //# sourceMappingURL=index.js.map
