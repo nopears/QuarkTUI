@@ -18,7 +18,14 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noUnusedLocals": false,
-		"noUnusedParameters": false
+		"noUnusedParameters": false,
+		"paths": {
+			"@quarktui/core": ["./src/core"],
+			"@quarktui/widgets": ["./src/widgets"],
+			"@quarktui/dialogs": ["./src/dialogs"],
+			"@quarktui/pickers": ["./src/pickers"],
+			"@quarktui/types": ["./src/types"]
+		}
 	},
 	"include": [
 		"src/**/*"

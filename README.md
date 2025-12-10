@@ -19,6 +19,34 @@ A lightweight TUI (Terminal User Interface) component framework for building int
 npm install quarktui
 ```
 
+## Module Imports
+
+QuarkTUI is organized into independent modules. You can import from the main package or from specific modules:
+
+```typescript
+// Import everything (convenience)
+import { Text, ProgressBar, showToast } from "quarktui";
+
+// Or import from specific modules
+import { Text, ProgressBar } from "quarktui/widgets";
+import { showToast, toastSuccess } from "quarktui/dialogs";
+import { pickFile } from "quarktui/pickers";
+import { style, getTerminalSize } from "quarktui/core";
+```
+
+**Available modules:**
+- `quarktui/core` - Terminal control, theming, keyboard, drawing
+- `quarktui/widgets` - UI components (Text, Table, ProgressBar, etc.)
+- `quarktui/dialogs` - Dialog components (menus, input, spinners, toasts)
+- `quarktui/pickers` - File and folder selection
+- `quarktui/types` - Type definitions
+
+See module-specific READMEs for detailed documentation:
+- [Core Module](src/core/README.md)
+- [Widgets Module](src/widgets/README.md)
+- [Dialogs Module](src/dialogs/README.md)
+- [Pickers Module](src/pickers/README.md)
+
 ## Quick Start
 
 ```typescript
