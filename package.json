@@ -1,72 +1,72 @@
 {
-  "name": "quarktui",
-  "version": "0.0.1",
-  "description": "A lightweight TUI component framework for building interactive terminal applications",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js"
-    },
-    "./widgets": {
-      "types": "./dist/widgets/index.d.ts",
-      "import": "./dist/widgets/index.js"
-    },
-    "./dialogs": {
-      "types": "./dist/dialogs/index.d.ts",
-      "import": "./dist/dialogs/index.js"
-    },
-    "./pickers": {
-      "types": "./dist/pickers/index.d.ts",
-      "import": "./dist/pickers/index.js"
-    },
-    "./types": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "src",
-    "tsconfig.json",
-    "README.md"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build"
-  },
-  "keywords": [
-    "tui",
-    "terminal",
-    "cli",
-    "ui",
-    "components",
-    "framework",
-    "typescript"
-  ],
-  "author": "nopears",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nopears/QuarkTUI.git"
-  },
-  "bugs": {
-    "url": "https://github.com/nopears/QuarkTUI/issues"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^24.10.1",
-    "typescript": "^5.0.0"
-  }
+	"name": "quarktui",
+	"version": "0.0.2",
+	"description": "A lightweight TUI component framework for building interactive terminal applications",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./core": {
+			"types": "./dist/core/index.d.ts",
+			"import": "./dist/core/index.js"
+		},
+		"./widgets": {
+			"types": "./dist/widgets/index.d.ts",
+			"import": "./dist/widgets/index.js"
+		},
+		"./dialogs": {
+			"types": "./dist/dialogs/index.d.ts",
+			"import": "./dist/dialogs/index.js"
+		},
+		"./pickers": {
+			"types": "./dist/pickers/index.d.ts",
+			"import": "./dist/pickers/index.js"
+		},
+		"./types": {
+			"types": "./dist/types/index.d.ts",
+			"import": "./dist/types/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"src",
+		"tsconfig.json",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"typecheck": "tsc --noEmit",
+		"clean": "rm -rf dist",
+		"prepublishOnly": "npm run clean && npm run build"
+	},
+	"keywords": [
+		"tui",
+		"terminal",
+		"cli",
+		"ui",
+		"components",
+		"framework",
+		"typescript"
+	],
+	"author": "nopears",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nopears/QuarkTUI.git"
+	},
+	"bugs": {
+		"url": "https://github.com/nopears/QuarkTUI/issues"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^24.10.1",
+		"typescript": "^5.0.0"
+	}
 }
