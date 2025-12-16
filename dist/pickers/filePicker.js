@@ -274,7 +274,7 @@ export async function pickFile(options = {}) {
                 value: e.value,
                 hint: e.hint,
             })),
-            { label: `❌ ${labels.cancel}`, value: "__CANCEL__" },
+            { label: `← ${labels.cancel}`, value: "__CANCEL__" },
         ];
         const result = await selectMenu({
             title,

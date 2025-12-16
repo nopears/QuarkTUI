@@ -19,28 +19,28 @@ import { style } from "../core/style";
  * Options for configuring the folder picker.
  */
 export interface FolderPickerOptions {
-  /** Starting directory (default: current working directory) */
-  startDir?: string;
-  /** Title displayed at the top of the picker */
-  title?: string;
-  /** Filter function - return true to include the folder */
-  filter?: (dirname: string, stats: Stats) => boolean;
-  /** Whether to show hidden folders (starting with .) */
-  showHidden?: boolean;
-  /** Custom icons */
-  icons?: {
-    folder?: string;
-    folderOpen?: string;
-    select?: string;
-  };
-  /** Custom labels */
-  labels?: {
-    cancel?: string;
-    parentDir?: string;
-    selectFolder?: string;
-  };
-  /** Maximum path length to display before truncating */
-  maxPathLength?: number;
+	/** Starting directory (default: current working directory) */
+	startDir?: string;
+	/** Title displayed at the top of the picker */
+	title?: string;
+	/** Filter function - return true to include the folder */
+	filter?: (dirname: string, stats: Stats) => boolean;
+	/** Whether to show hidden folders (starting with .) */
+	showHidden?: boolean;
+	/** Custom icons */
+	icons?: {
+		folder?: string;
+		folderOpen?: string;
+		select?: string;
+	};
+	/** Custom labels */
+	labels?: {
+		cancel?: string;
+		parentDir?: string;
+		selectFolder?: string;
+	};
+	/** Maximum path length to display before truncating */
+	maxPathLength?: number;
 }
 
 /**
@@ -52,10 +52,10 @@ type EntryType = "dir" | "up" | "select";
  * Internal representation of a directory entry.
  */
 interface FolderEntry {
-  label: string;
-  value: string;
-  type: EntryType;
-  hint?: string;
+	label: string;
+	value: string;
+	type: EntryType;
+	hint?: string;
 }
 
 // =============================================================================
@@ -63,15 +63,15 @@ interface FolderEntry {
 // =============================================================================
 
 const DEFAULT_ICONS = {
-  folder: "📁",
-  folderOpen: "📂",
-  select: "✓",
+	folder: "📁",
+	folderOpen: "📂",
+	select: "✓",
 };
 
 const DEFAULT_LABELS = {
-  cancel: "Cancel",
-  parentDir: "parent directory",
-  selectFolder: "Select this folder",
+	cancel: "Cancel",
+	parentDir: "parent directory",
+	selectFolder: "Select this folder",
 };
 
 const DEFAULT_MAX_PATH_LENGTH = 45;
@@ -84,102 +84,102 @@ const DEFAULT_MAX_PATH_LENGTH = 45;
  * Truncate a path if it's too long.
  */
 function truncatePath(dirPath: string, maxLen: number): string {
-  if (dirPath.length <= maxLen) return dirPath;
+	if (dirPath.length <= maxLen) return dirPath;
 
-  const parts = dirPath.split(path.sep);
-  if (parts.length <= 2) return "..." + dirPath.slice(-maxLen + 3);
+	const parts = dirPath.split(path.sep);
+	if (parts.length <= 2) return "..." + dirPath.slice(-maxLen + 3);
 
-  const lastPart = parts[parts.length - 1];
-  if (!lastPart) return "..." + dirPath.slice(-maxLen + 3);
+	const lastPart = parts[parts.length - 1];
+	if (!lastPart) return "..." + dirPath.slice(-maxLen + 3);
 
-  let result = lastPart;
-  let i = parts.length - 2;
+	let result = lastPart;
+	let i = parts.length - 2;
 
-  while (i >= 0) {
-    const part = parts[i];
-    if (!part || result.length + part.length + 4 >= maxLen) break;
-    result = path.join(part, result);
-    i--;
-  }
+	while (i >= 0) {
+		const part = parts[i];
+		if (!part || result.length + part.length + 4 >= maxLen) break;
+		result = path.join(part, result);
+		i--;
+	}
 
-  return ".../" + result;
+	return ".../" + result;
 }
 
 /**
  * List folder entries for navigation.
  */
 async function listFolderEntries(
-  currentDir: string,
-  options: FolderPickerOptions,
+	currentDir: string,
+	options: FolderPickerOptions,
 ): Promise<FolderEntry[]> {
-  const entries: FolderEntry[] = [];
-  const icons = { ...DEFAULT_ICONS, ...options.icons };
-  const labels = { ...DEFAULT_LABELS, ...options.labels };
+	const entries: FolderEntry[] = [];
+	const icons = { ...DEFAULT_ICONS, ...options.icons };
+	const labels = { ...DEFAULT_LABELS, ...options.labels };
 
-  // Add option to select current folder
-  entries.push({
-    label: style(`${icons.select} ${labels.selectFolder}`, "success"),
-    value: "__SELECT__",
-    type: "select",
-  });
+	// Add option to select current folder
+	entries.push({
+		label: style(`${icons.select} ${labels.selectFolder}`, "success"),
+		value: "__SELECT__",
+		type: "select",
+	});
 
-  // Add parent directory option
-  const parent = path.dirname(currentDir);
-  if (parent !== currentDir) {
-    entries.push({
-      label: `${icons.folderOpen} ..`,
-      value: "__UP__",
-      type: "up",
-      hint: labels.parentDir,
-    });
-  }
+	// Add parent directory option
+	const parent = path.dirname(currentDir);
+	if (parent !== currentDir) {
+		entries.push({
+			label: `${icons.folderOpen} ..`,
+			value: "__UP__",
+			type: "up",
+			hint: labels.parentDir,
+		});
+	}
 
-  // Read directory contents
-  let dirItems: string[];
-  try {
-    dirItems = await readdir(currentDir);
-  } catch {
-    return entries;
-  }
+	// Read directory contents
+	let dirItems: string[];
+	try {
+		dirItems = await readdir(currentDir);
+	} catch {
+		return entries;
+	}
 
-  const dirs: FolderEntry[] = [];
+	const dirs: FolderEntry[] = [];
 
-  for (const name of dirItems) {
-    // Skip hidden files unless showHidden is true
-    if (!options.showHidden && name.startsWith(".")) continue;
+	for (const name of dirItems) {
+		// Skip hidden files unless showHidden is true
+		if (!options.showHidden && name.startsWith(".")) continue;
 
-    const fullPath = path.join(currentDir, name);
-    let fileStat: Stats;
-    try {
-      fileStat = await stat(fullPath);
-    } catch {
-      continue;
-    }
+		const fullPath = path.join(currentDir, name);
+		let fileStat: Stats;
+		try {
+			fileStat = await stat(fullPath);
+		} catch {
+			continue;
+		}
 
-    if (fileStat.isDirectory()) {
-      // Apply filtering
-      let includeFolder = true;
+		if (fileStat.isDirectory()) {
+			// Apply filtering
+			let includeFolder = true;
 
-      if (options.filter) {
-        includeFolder = options.filter(name, fileStat);
-      }
+			if (options.filter) {
+				includeFolder = options.filter(name, fileStat);
+			}
 
-      if (includeFolder) {
-        dirs.push({
-          label: `${icons.folder} ${name}`,
-          value: fullPath,
-          type: "dir",
-        });
-      }
-    }
-  }
+			if (includeFolder) {
+				dirs.push({
+					label: `${icons.folder} ${name}`,
+					value: fullPath,
+					type: "dir",
+				});
+			}
+		}
+	}
 
-  // Sort alphabetically
-  dirs.sort((a, b) => a.label.localeCompare(b.label));
+	// Sort alphabetically
+	dirs.sort((a, b) => a.label.localeCompare(b.label));
 
-  entries.push(...dirs);
+	entries.push(...dirs);
 
-  return entries;
+	return entries;
 }
 
 // =============================================================================
@@ -214,74 +214,74 @@ async function listFolderEntries(
  * ```
  */
 export async function pickFolder(
-  options: FolderPickerOptions = {},
+	options: FolderPickerOptions = {},
 ): Promise<string | null> {
-  const title = options.title ?? "Select a folder";
-  const maxPathLen = options.maxPathLength ?? DEFAULT_MAX_PATH_LENGTH;
-  const labels = { ...DEFAULT_LABELS, ...options.labels };
+	const title = options.title ?? "Select a folder";
+	const maxPathLen = options.maxPathLength ?? DEFAULT_MAX_PATH_LENGTH;
+	const labels = { ...DEFAULT_LABELS, ...options.labels };
 
-  let currentDir = path.resolve(options.startDir ?? process.cwd());
+	let currentDir = path.resolve(options.startDir ?? process.cwd());
 
-  while (true) {
-    const entries = await listFolderEntries(currentDir, options);
-    const displayPath = truncatePath(currentDir, maxPathLen);
+	while (true) {
+		const entries = await listFolderEntries(currentDir, options);
+		const displayPath = truncatePath(currentDir, maxPathLen);
 
-    // Count subdirectories
-    const dirCount = entries.filter((e) => e.type === "dir").length;
+		// Count subdirectories
+		const dirCount = entries.filter((e) => e.type === "dir").length;
 
-    // Build info lines
-    const infoLines = [
-      `${style("Location:", "dim")} ${displayPath}`,
-      dirCount > 0
-        ? `${style("Subfolders:", "dim")} ${dirCount}`
-        : style("No subfolders", "dim"),
-    ];
+		// Build info lines
+		const infoLines = [
+			`${style("Location:", "dim")} ${displayPath}`,
+			dirCount > 0
+				? `${style("Subfolders:", "dim")} ${dirCount}`
+				: style("No subfolders", "dim"),
+		];
 
-    // Build menu options
-    const menuOptions = [
-      ...entries.map((e) => ({
-        label: e.label,
-        value: e.value,
-        hint: e.hint,
-      })),
-      { label: `❌ ${labels.cancel}`, value: "__CANCEL__" },
-    ];
+		// Build menu options
+		const menuOptions = [
+			...entries.map((e) => ({
+				label: e.label,
+				value: e.value,
+				hint: e.hint,
+			})),
+			{ label: `← ${labels.cancel}`, value: "__CANCEL__" },
+		];
 
-    const result = await selectMenu({
-      title,
-      options: menuOptions,
-      infoLines,
-    });
+		const result = await selectMenu({
+			title,
+			options: menuOptions,
+			infoLines,
+		});
 
-    // Handle cancellation
-    if (result.type === "cancelled" || result.value === "__CANCEL__") {
-      return null;
-    }
+		// Handle cancellation
+		if (result.type === "cancelled" || result.value === "__CANCEL__") {
+			return null;
+		}
 
-    // Handle folder selection
-    if (result.value === "__SELECT__") {
-      return currentDir;
-    }
+		// Handle folder selection
+		if (result.value === "__SELECT__") {
+			return currentDir;
+		}
 
-    // Handle navigation up
-    if (result.value === "__UP__") {
-      const parent = path.dirname(currentDir);
-      if (parent !== currentDir) {
-        currentDir = parent;
-      }
-      continue;
-    }
+		// Handle navigation up
+		if (result.value === "__UP__") {
+			const parent = path.dirname(currentDir);
+			if (parent !== currentDir) {
+				currentDir = parent;
+			}
+			continue;
+		}
 
-    // Find the selected entry
-    const selected = entries.find((e) => e.value === result.value);
-    if (!selected) continue;
+		// Find the selected entry
+		const selected = entries.find((e) => e.value === result.value);
+		if (!selected) continue;
 
-    // Handle directory navigation
-    if (selected.type === "dir") {
-      currentDir = selected.value;
-      continue;
-    }
-  }
+		// Handle directory navigation
+		if (selected.type === "dir") {
+			currentDir = selected.value;
+			continue;
+		}
+	}
 }
 
 /**
@@ -292,8 +292,8 @@ export async function pickFolder(
  * @returns The selected folder path, or null if cancelled
  */
 export async function pickFolderFromHome(
-  options: Omit<FolderPickerOptions, "startDir"> = {},
+	options: Omit<FolderPickerOptions, "startDir"> = {},
 ): Promise<string | null> {
-  const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? process.cwd();
-  return pickFolder({ ...options, startDir: homeDir });
+	const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? process.cwd();
+	return pickFolder({ ...options, startDir: homeDir });
 }
